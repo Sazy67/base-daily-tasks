@@ -7,6 +7,7 @@ import { RevenueTracker } from '@/lib/revenue'
 import { ReferralSystem } from '@/lib/referral'
 import { baseSdk } from '@/lib/base-sdk'
 import { FarcasterSDK } from '@/lib/farcaster-sdk'
+import ThemeToggle from '@/components/ThemeToggle'
 
 interface Prize {
   id: string
@@ -723,6 +724,7 @@ export default function Home() {
 
   return (
     <div className="container">
+      <ThemeToggle />
       <header style={{ textAlign: 'center', marginBottom: '40px' }}>
         <h1 style={{ color: 'white', fontSize: '2.5rem', marginBottom: '10px' }}>
           Base Daily Tasks
