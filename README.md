@@ -48,7 +48,7 @@
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/base-daily-tasks.git
+git clone https://github.com/Sazy67/base-daily-tasks.git
 cd base-daily-tasks
 ```
 
