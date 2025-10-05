@@ -1,0 +1,33 @@
+import { NextResponse } from 'next/server'
+
+export async function GET() {
+  const manifest = {
+    name: "Base Daily Tasks",
+    description: "Complete daily tasks and spin the wheel to earn rewards on Base network",
+    version: "1.0.0",
+    icon: "https://baseaapp.vercel.app/icon.svg",
+    url: "https://baseaapp.vercel.app",
+    start_url: "https://baseaapp.vercel.app",
+    display: "standalone",
+    theme_color: "#0052ff",
+    background_color: "#0052ff",
+    categories: ["defi", "gaming", "social"],
+    permissions: [
+      "wallet_connect",
+      "transaction_send"
+    ],
+    networks: ["base"],
+    manifest_version: 1,
+    baseBuilder: {
+      allowedAddresses: ["0x0f797c30d549144973f7bb87bfd29d3a7070ce64"]
+    }
+  }
+
+  return NextResponse.json(manifest, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': 'no-cache'
+    }
+  })
+}

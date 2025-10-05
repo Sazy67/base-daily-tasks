@@ -1,0 +1,32 @@
+{
+  "name": "Base Daily Tasks",
+  "description": "Complete daily tasks and spin the wheel to earn rewards on Base network",
+  "version": "1.0.0",
+  "icon": "https://baseaapp-r1n49r4zm-suat-ayazs-projects-64e3ae06.vercel.app/icon-192x192.png",
+  "screenshots": [
+    "https://baseaapp-r1n49r4zm-suat-ayazs-projects-64e3ae06.vercel.app/screenshot1.png",
+    "https://baseaapp-r1n49r4zm-suat-ayazs-projects-64e3ae06.vercel.app/screenshot2.png"
+  ],
+  "categories": ["defi", "gaming", "social"],
+  "website": "https://baseaapp-r1n49r4zm-suat-ayazs-projects-64e3ae06.vercel.app",
+  "start_url": "https://baseaapp-r1n49r4zm-suat-ayazs-projects-64e3ae06.vercel.app",
+  "author": {
+    "name": "Base Daily Tasks Team",
+    "email": "contact@example.com"
+  },
+  "permissions": [
+    "wallet_connect",
+    "transaction_send"
+  ],
+  "networks": ["base"],
+  "features": [
+    "Daily task completion system",
+    "Spin wheel rewards", 
+    "Referral system",
+    "Revenue tracking"
+  ],
+  "manifest_version": 1,
+  "display": "standalone",
+  "theme_color": "#0052ff",
+  "background_color": "#0052ff"
+}

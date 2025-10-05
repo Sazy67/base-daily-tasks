@@ -1,0 +1,37 @@
+{
+  "name": "Base Daily Tasks",
+  "short_name": "Base Tasks",
+  "description": "Complete daily tasks and spin the wheel to earn rewards on Base network",
+  "version": "1.0.0",
+  "manifest_version": 2,
+  "icon": "https://baseaapp.vercel.app/icon.svg",
+  "start_url": "https://baseaapp.vercel.app",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#0052ff",
+  "background_color": "#0052ff",
+  "scope": "https://baseaapp.vercel.app/",
+  "categories": ["defi", "gaming", "productivity"],
+  "lang": "en",
+  "dir": "ltr",
+  "permissions": [
+    "wallet_connect",
+    "transaction_send",
+    "network_access"
+  ],
+  "networks": ["base"],
+  "base_config": {
+    "network": "base",
+    "chain_id": 8453,
+    "supports_wallet_connect": true,
+    "supports_transactions": true,
+    "min_sdk_version": "1.0.0"
+  },
+  "icons": [
+    {
+      "src": "https://baseaapp.vercel.app/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

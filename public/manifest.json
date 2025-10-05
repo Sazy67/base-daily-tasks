@@ -1,0 +1,21 @@
+{
+  "name": "Base Daily Tasks",
+  "short_name": "BaseTasks", 
+  "description": "Complete daily tasks and spin the wheel to earn rewards on Base network",
+  "start_url": "https://baseaapp.vercel.app/",
+  "display": "standalone",
+  "background_color": "#0052ff",
+  "theme_color": "#0052ff",
+  "orientation": "portrait",
+  "scope": "https://baseaapp.vercel.app/",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["finance", "games", "social"],
+  "lang": "en",
+  "id": "base-daily-tasks"
+}
