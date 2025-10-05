@@ -199,8 +199,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 - Create an issue on GitHub
-- Contact: [your-email@example.com]
-- Twitter: [@yourusername]
+- Contact: [suatayaz@gmail.com]
+- Twitter: [@suatayaz_
 
 ---
 
