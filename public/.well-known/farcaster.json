@@ -1,12 +1,4 @@
 {
-  "accountAssociation": {
-    "header": "eyJmaWQiOjMyNzYwMCwidHlwZSI6ImF1dGgiLCJrZXkiOiIweENBMzkyMTgyNGRhMTAzOEFBNzQ4ZkY3NEE5OThmMkEzYkREYzQwOGQifQ",
-    "payload": "eyJkb21haW4iOiJiYXNlYWFwcC52ZXJjZWwuYXBwIn0",
-    "signature": "hplZdpZOfjRuBJ2WUX0jLtF0zViBd2A7UJetOsiVRTJxKdfqjZ7CcKSkZMZ+O+9yRF/2OnaTLm5e6Pbc7rXUOBs="
-  },
-  "baseBuilder": {
-    "allowedAddresses": ["0x0f797c30d549144973f7bb87bfd29d3a7070ce64"]
-  },
   "miniapp": {
     "version": "1",
     "name": "Base Daily Tasks",
