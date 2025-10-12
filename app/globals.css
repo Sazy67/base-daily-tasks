@@ -222,4 +222,127 @@ eme Toggle Button */
   .theme-toggle-text {
     display: none;
   }
+}/
+* Frame-Specific Optimizations */
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;
+    max-width: 100%;
+  }
+  
+  /* Compact header for frames */
+  .frame-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .frame-header h1 {
+    font-size: 1.8rem !important;
+    margin-bottom: 5px !important;
+  }
+  
+  /* Two-column layout for frame */
+  .frame-layout {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 15px;
+    align-items: start;
+  }
+  
+  .frame-main {
+    min-width: 0; /* Prevent overflow */
+  }
+  
+  .frame-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  /* Compact spin wheel for frame */
+  .frame-spin-wheel {
+    width: 180px !important;
+    height: 180px !important;
+    margin: 0 auto !important;
+  }
+  
+  /* Compact stats */
+  .frame-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .frame-stat-card {
+    padding: 12px !important;
+    text-align: center;
+  }
+  
+  .frame-stat-number {
+    font-size: 1.5rem !important;
+  }
+  
+  .frame-stat-label {
+    font-size: 0.8rem !important;
+    margin-top: 4px !important;
+  }
+  
+  /* Compact wallet info */
+  .frame-wallet-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+  
+  /* Compact task list */
+  .frame-tasks {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .frame-task-item {
+    padding: 10px !important;
+    margin-bottom: 8px !important;
+    font-size: 0.9rem;
+  }
+  
+  /* Hide theme toggle in frame */
+  .theme-toggle {
+    display: none !important;
+  }
+}
+
+/* Ultra-compact for very narrow frames */
+@media (max-width: 400px) {
+  .frame-layout {
+    grid-template-columns: 1fr 160px;
+    gap: 10px;
+  }
+  
+  .frame-spin-wheel {
+    width: 150px !important;
+    height: 150px !important;
+  }
+  
+  .frame-header h1 {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* Frame detection */
+.frame-optimized {
+  /* Styles when in frame mode */
+}
+
+/* Detect if in iframe */
+@media all {
+  .in-frame .container {
+    padding: 8px;
+  }
+  
+  .in-frame .theme-toggle {
+    display: none;
+  }
 }

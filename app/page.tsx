@@ -722,11 +722,18 @@ export default function Home() {
 
   // Ana sayfa artık direkt görev sayfası - cüzdan bağlantısı header'da
 
+  // Frame detection
+  const [isInFrame, setIsInFrame] = useState(false)
+  
+  useEffect(() => {
+    setIsInFrame(window.self !== window.top)
+  }, [])
+
   return (
-    <div className="container">
-      <ThemeToggle />
-      <header style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <h1 style={{ color: 'white', fontSize: '2.5rem', marginBottom: '10px' }}>
+    <div className={`container ${isInFrame ? 'in-frame' : ''}`}>
+      {!isInFrame && <ThemeToggle />}
+      <header className={`${isInFrame ? 'frame-header' : ''}`} style={{ textAlign: 'center', marginBottom: isInFrame ? '20px' : '40px' }}>
+        <h1 style={{ color: 'white', fontSize: isInFrame ? '1.8rem' : '2.5rem', marginBottom: '10px' }}>
           Base Daily Tasks
         </h1>
         
@@ -869,26 +876,250 @@ export default function Home() {
         )}
       </header>
 
-      <div className="stats-grid">
-        <div className="card stat-card">
-          <div className="stat-number">{points.toLocaleString()}</div>
-          <div className="stat-label">Toplam Puan</div>
+      {/* Frame-optimized layout */}
+      {isInFrame ? (
+        <div className="frame-layout">
+          <div className="frame-main">
+            {/* Compact stats for frame */}
+            <div className="frame-stats">
+              <div className="card frame-stat-card">
+                <div className="frame-stat-number">{points.toLocaleString()}</div>
+                <div className="frame-stat-label">Toplam Puan</div>
+              </div>
+              <div className="card frame-stat-card">
+                <div className="frame-stat-number">{parseFloat(ethBalance).toFixed(4)}</div>
+                <div className="frame-stat-label">ETH Bakiye</div>
+              </div>
+              <div className="card frame-stat-card">
+                <div className="frame-stat-number">{tasks.filter(t => t.completed).length}</div>
+                <div className="frame-stat-label">Tamamlanan Görev</div>
+              </div>
+            </div>
+            
+            {/* Compact tasks for frame */}
+            <div className="card frame-tasks">
+              <h3 style={{ marginBottom: '15px', color: '#333', fontSize: '1.1rem' }}>🎯 Günlük Görevler</h3>
+              {tasks.slice(0, 3).map(task => (
+                <div 
+                  key={task.id} 
+                  className={`task-item frame-task-item ${task.completed ? 'task-completed' : ''}`}
+                >
+                  <div>
+                    <h4 style={{ marginBottom: '2px', fontSize: '0.9rem' }}>{task.title}</h4>
+                    <p style={{ color: '#666', fontSize: '0.8rem' }}>+{task.reward} puan</p>
+                  </div>
+                  <div>
+                    {task.completed ? (
+                      <span style={{ color: '#22c55e', fontSize: '0.8rem' }}>✅</span>
+                    ) : (
+                      <button 
+                        className="button"
+                        style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+                        onClick={() => {
+                          if (!walletConnected) {
+                            handleWalletSelection()
+                          } else {
+                            completeTask(task.id)
+                          }
+                        }}
+                        disabled={loading || (walletConnected && parseFloat(ethBalance) < parseFloat(task.feeAmount))}
+                      >
+                        {loading ? '⏳' : !walletConnected ? '🔗' : 'Tamamla'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="frame-sidebar">
+            {/* Compact spin wheel */}
+            <div className="card" style={{ padding: '15px' }}>
+              <h3 style={{ textAlign: 'center', marginBottom: '10px', fontSize: '1rem' }}>🎰 Çark</h3>
+              <div className="spin-wheel frame-spin-wheel" style={{ transform: `rotate(${rotation}deg)` }}>
+                <div className="wheel-pointer"></div>
+                {PRIZES.map((prize, index) => {
+                  const angle = (index * 360) / PRIZES.length
+                  return (
+                    <div
+                      key={prize.id}
+                      className="wheel-segment"
+                      style={{
+                        background: prize.color,
+                        transform: `rotate(${angle}deg)`,
+                        clipPath: 'polygon(0 0, 100% 0, 50% 100%)'
+                      }}
+                    >
+                      <div style={{
+                        position: 'absolute',
+                        top: '12px',
+                        left: '50%',
+                        transform: `translateX(-50%) rotate(${-angle + 25}deg)`,
+                        color: 'white',
+                        fontWeight: 'bold',
+                        fontSize: '0.6rem'
+                      }}>
+                        {prize.points}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+              
+              <button 
+                className="button"
+                onClick={() => {
+                  if (!walletConnected) {
+                    handleWalletSelection()
+                  } else {
+                    spinWheel()
+                  }
+                }}
+                disabled={loading || isSpinning || (walletConnected && !canSpin())}
+                style={{ width: '100%', padding: '8px', fontSize: '0.8rem' }}
+              >
+                {loading ? '⏳' : isSpinning ? '🎰' : !walletConnected ? '🔗' : '🎰 Çevir'}
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="card stat-card">
-          <div className="stat-number">{parseFloat(ethBalance).toFixed(4)}</div>
-          <div className="stat-label">ETH Bakiye</div>
-        </div>
-        <div className="card stat-card">
-          <div className="stat-number">{tasks.filter(t => t.completed).length}</div>
-          <div className="stat-label">Tamamlanan Görev</div>
-        </div>
-        <div className="card stat-card">
-          <div className="stat-number">{getLevel()}</div>
-          <div className="stat-label">Seviye</div>
-        </div>
-      </div>
+      ) : (
+        /* Normal desktop layout */
+        <>
+          <div className="stats-grid">
+            <div className="card stat-card">
+              <div className="stat-number">{points.toLocaleString()}</div>
+              <div className="stat-label">Toplam Puan</div>
+            </div>
+            <div className="card stat-card">
+              <div className="stat-number">{parseFloat(ethBalance).toFixed(4)}</div>
+              <div className="stat-label">ETH Bakiye</div>
+            </div>
+            <div className="card stat-card">
+              <div className="stat-number">{tasks.filter(t => t.completed).length}</div>
+              <div className="stat-label">Tamamlanan Görev</div>
+            </div>
+            <div className="card stat-card">
+              <div className="stat-number">{getLevel()}</div>
+              <div className="stat-label">Seviye</div>
+            </div>
+          </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '30px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '30px' }}>
+            <div className="card">
+              <h2 style={{ marginBottom: '20px', color: '#333' }}>🎯 Günlük Görevler</h2>
+              {tasks.map(task => (
+                <div 
+                  key={task.id} 
+                  className={`task-item ${task.completed ? 'task-completed' : ''}`}
+                >
+                  <div>
+                    <h3 style={{ marginBottom: '4px' }}>{task.title}</h3>
+                    <p style={{ color: '#666', fontSize: '0.9rem' }}>{task.description}</p>
+                    <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+                      <span style={{ color: '#ff6b6b', fontSize: '0.8rem' }}>
+                        💸 Fee: {task.feeAmount} ETH
+                      </span>
+                      {task.minBalance && (
+                        <span style={{ color: '#ff9500', fontSize: '0.8rem' }}>
+                          💎 Min: {task.minBalance} ETH
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ color: '#667eea', fontWeight: 'bold', marginBottom: '8px' }}>
+                      +{task.reward} puan
+                    </div>
+                    {task.completed ? (
+                      <span style={{ color: '#22c55e', fontWeight: 'bold' }}>✅ Tamamlandı</span>
+                    ) : (
+                      <button 
+                        className="button"
+                        onClick={() => {
+                          if (!walletConnected) {
+                            handleWalletSelection()
+                          } else {
+                            completeTask(task.id)
+                          }
+                        }}
+                        disabled={loading || (walletConnected && parseFloat(ethBalance) < parseFloat(task.feeAmount))}
+                      >
+                        {loading ? 'İşleniyor...' : !walletConnected ? '🔗 Bağlan' : 'Tamamla'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="card">
+              <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>🎰 Şans Çarkı</h2>
+              
+              <div className="spin-wheel" style={{ transform: `rotate(${rotation}deg)` }}>
+                <div className="wheel-pointer"></div>
+                {PRIZES.map((prize, index) => {
+                  const angle = (index * 360) / PRIZES.length
+                  return (
+                    <div
+                      key={prize.id}
+                      className="wheel-segment"
+                      style={{
+                        background: prize.color,
+                        transform: `rotate(${angle}deg)`,
+                        clipPath: 'polygon(0 0, 100% 0, 50% 100%)'
+                      }}
+                    >
+                      <div style={{
+                        position: 'absolute',
+                        top: '15px',
+                        left: '50%',
+                        transform: `translateX(-50%) rotate(${-angle + 25}deg)`,
+                        color: 'white',
+                        fontWeight: 'bold',
+                        fontSize: '0.7rem'
+                      }}>
+                        {prize.label}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              <div style={{ textAlign: 'center' }}>
+                <p style={{ marginBottom: '10px', color: '#666', fontSize: '0.9rem' }}>
+                  💰 Maliyet: {SPIN_WHEEL_COST} ETH + {SPIN_WHEEL_FEE} ETH fee
+                </p>
+                {!canSpin() && parseFloat(ethBalance) >= parseFloat(SPIN_WHEEL_COST) && (
+                  <p style={{ color: '#ff6b6b', fontSize: '0.9rem', marginBottom: '10px' }}>
+                    ⏰ Sonraki çevirme: {Math.ceil(60 - ((new Date().getTime() - (lastSpin?.getTime() || 0)) / (1000 * 60)))} dakika
+                  </p>
+                )}
+                <button 
+                  className="button"
+                  onClick={() => {
+                    if (!walletConnected) {
+                      handleWalletSelection()
+                    } else {
+                      spinWheel()
+                    }
+                  }}
+                  disabled={loading || isSpinning || (walletConnected && !canSpin())}
+                  style={{ width: '100%' }}
+                >
+                  {loading ? 'İşleniyor...' : isSpinning ? 'Çevriliyor...' : !walletConnected ? '🔗 Bağlan' : '🎰 Çarkı Çevir!'}
+                </button>
+                {parseFloat(ethBalance) < (parseFloat(SPIN_WHEEL_COST) + parseFloat(SPIN_WHEEL_FEE)) && (
+                  <p style={{ color: '#ff6b6b', fontSize: '0.9rem', marginTop: '10px' }}>
+                    ❌ Yetersiz ETH! En az {(parseFloat(SPIN_WHEEL_COST) + parseFloat(SPIN_WHEEL_FEE)).toFixed(3)} ETH gerekli.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
         <div className="card">
           <h2 style={{ marginBottom: '20px', color: '#333' }}>🎯 Günlük Görevler</h2>
           {tasks.map(task => (
