@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base Daily Tasks - Farcaster 2024 SDK</title>
+    
+    <!-- Farcaster Frame Meta Tags -->
+    <meta name="fc:frame" content="vNext" />
+    <meta name="fc:frame:image" content="https://baseaapp.vercel.app/baseikon.png" />
+    <meta name="fc:frame:button:1" content="🎯 Open App" />
+    <meta name="fc:frame:button:1:action" content="link" />
+    <meta name="fc:frame:button:1:target" content="https://baseaapp.vercel.app/farcaster-2024.html" />
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 { font-size: 2rem; margin-bottom: 20px; }
+        .status {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 0.85rem;
+            text-align: left;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        button {
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn-secondary { background: #8b5cf6; }
+        .success { color: #22c55e; }
+        .error { color: #ef4444; }
+        .info { color: #3b82f6; }
+        .warning { color: #f59e0b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Farcaster 2024 SDK</h1>
+        <p>En güncel Farcaster SDK formatı</p>
+        
+        <div class="status" id="log">
+            <div class="info">🔄 Initializing 2024 SDK...</div>
+        </div>
+        
+        <div>
+            <button onclick="testReady()">🚀 Test Ready</button>
+            <button onclick="testAll()" class="btn-secondary">🔄 Test All</button>
+            <button onclick="clearLog()">🗑️ Clear</button>
+        </div>
+        
+        <div style="margin-top: 15px; font-size: 0.9rem;">
+            <div>Environment: <span id="env">...</span></div>
+            <div>Ready Count: <span id="count">0</span></div>
+        </div>
+    </div>
+
+    <script>
+        const log = document.getElementById('log');
+        let readyCount = 0;
+        
+        function addLog(message, type = 'info') {
+            const time = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `[${time}] ${message}`;
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function clearLog() {
+            log.innerHTML = '<div class="info">🗑️ Log cleared</div>';
+            readyCount = 0;
+            updateCount();
+        }
+        
+        function updateCount() {
+            document.getElementById('count').textContent = readyCount;
+        }
+        
+        // Environment detection
+        const isInIframe = window.self !== window.top;
+        document.getElementById('env').textContent = isInIframe ? 'Iframe' : 'Direct';
+        
+        // FARCASTER 2024 SDK - Multiple format attempts
+        window.sdk = {
+            actions: {
+                ready() {
+                    readyCount++;
+                    updateCount();
+                    addLog('🚀 2024 SDK ready() called', 'info');
+                    
+                    try {
+                        if (window.parent && window.parent !== window) {
+                            // FORMAT 1: Latest Farcaster format (2024)
+                            window.parent.postMessage({
+                                type: 'frame_ready',
+                                data: { ready: true }
+                            }, '*');
+                            addLog('✅ Format 1: frame_ready sent', 'success');
+                            
+                            // FORMAT 2: SDK ready format
+                            window.parent.postMessage({
+                                type: 'sdk_ready',
+                                ready: true,
+                                timestamp: Date.now()
+                            }, '*');
+                            addLog('✅ Format 2: sdk_ready sent', 'success');
+                            
+                            // FORMAT 3: Simple ready
+                            window.parent.postMessage({
+                                type: 'ready'
+                            }, '*');
+                            addLog('✅ Format 3: ready object sent', 'success');
+                            
+                            // FORMAT 4: String ready
+                            window.parent.postMessage('ready', '*');
+                            addLog('✅ Format 4: ready string sent', 'success');
+                            
+                            // FORMAT 5: Miniapp ready
+                            window.parent.postMessage({
+                                type: 'miniapp_ready',
+                                status: 'loaded'
+                            }, '*');
+                            addLog('✅ Format 5: miniapp_ready sent', 'success');
+                            
+                            // FORMAT 6: Action ready
+                            window.parent.postMessage({
+                                action: 'ready',
+                                source: 'sdk'
+                            }, '*');
+                            addLog('✅ Format 6: action ready sent', 'success');
+                            
+                        } else {
+                            addLog('ℹ️ Not in iframe - ready called locally', 'info');
+                        }
+                        
+                        return Promise.resolve();
+                    } catch (error) {
+                        addLog(`❌ Ready error: ${error.message}`, 'error');
+                        return Promise.reject(error);
+                    }
+                },
+                
+                close() {
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({ type: 'close' }, '*');
+                    }
+                },
+                
+                openUrl(url) {
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({ type: 'openUrl', url }, '*');
+                    } else {
+                        window.open(url, '_blank');
+                    }
+                }
+            }
+        };
+        
+        // IMMEDIATE ready calls - Multiple strategies
+        function immediateReady() {
+            addLog('🔄 Immediate ready sequence starting...', 'info');
+            
+            // Strategy 1: Immediate
+            try {
+                window.sdk.actions.ready();
+                addLog('✅ Strategy 1: Immediate ready', 'success');
+            } catch (e) {
+                addLog(`❌ Strategy 1 failed: ${e.message}`, 'error');
+            }
+            
+            // Strategy 2: Next tick
+            setTimeout(() => {
+                try {
+                    window.sdk.actions.ready();
+                    addLog('✅ Strategy 2: Next tick ready (0ms)', 'success');
+                } catch (e) {
+                    addLog(`❌ Strategy 2 failed: ${e.message}`, 'error');
+                }
+            }, 0);
+            
+            // Strategy 3: Micro delay
+            setTimeout(() => {
+                try {
+                    window.sdk.actions.ready();
+                    addLog('✅ Strategy 3: Micro delay ready (1ms)', 'success');
+                } catch (e) {
+                    addLog(`❌ Strategy 3 failed: ${e.message}`, 'error');
+                }
+            }, 1);
+            
+            // Strategy 4: Small delay
+            setTimeout(() => {
+                try {
+                    window.sdk.actions.ready();
+                    addLog('✅ Strategy 4: Small delay ready (10ms)', 'success');
+                } catch (e) {
+                    addLog(`❌ Strategy 4 failed: ${e.message}`, 'error');
+                }
+            }, 10);
+            
+            // Strategy 5: Standard delay
+            setTimeout(() => {
+                try {
+                    window.sdk.actions.ready();
+                    addLog('✅ Strategy 5: Standard delay ready (100ms)', 'success');
+                } catch (e) {
+                    addLog(`❌ Strategy 5 failed: ${e.message}`, 'error');
+                }
+            }, 100);
+        }
+        
+        // DOM ready strategy
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                addLog('📄 DOMContentLoaded event', 'info');
+                window.sdk.actions.ready();
+            });
+        } else {
+            addLog('📄 DOM already loaded', 'info');
+        }
+        
+        // Window load strategy
+        window.addEventListener('load', function() {
+            addLog('🌐 Window load event', 'info');
+            window.sdk.actions.ready();
+        });
+        
+        // Message listener
+        window.addEventListener('message', function(event) {
+            addLog(`📨 Message: ${JSON.stringify(event.data)}`, 'info');
+            
+            if (event.data === 'ping' || event.data?.type === 'ping') {
+                addLog('🔄 Ping received, responding...', 'warning');
+                window.sdk.actions.ready();
+            }
+        });
+        
+        // Manual test functions
+        function testReady() {
+            addLog('🧪 Manual ready test', 'info');
+            window.sdk.actions.ready();
+        }
+        
+        function testAll() {
+            addLog('🧪 Testing all strategies...', 'info');
+            immediateReady();
+        }
+        
+        // Initialize
+        addLog('🚀 Farcaster 2024 SDK initialized', 'success');
+        addLog(`🔍 Environment: ${document.getElementById('env').textContent}`, 'info');
+        addLog(`📱 User Agent: ${navigator.userAgent.substring(0, 40)}...`, 'info');
+        addLog(`📍 Referrer: ${document.referrer || 'None'}`, 'info');
+        addLog(`🌐 Location: ${window.location.href}`, 'info');
+        
+        // Start immediate ready sequence
+        immediateReady();
+    </script>
+</body>
+</html>

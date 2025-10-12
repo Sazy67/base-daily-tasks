@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ready Signal Test - Base Daily Tasks</title>
+    
+    <!-- Farcaster Frame Meta Tags -->
+    <meta name="fc:frame" content="vNext" />
+    <meta name="fc:frame:image" content="https://baseaapp.vercel.app/baseikon.png" />
+    <meta name="fc:frame:button:1" content="🎯 Test Ready" />
+    <meta name="fc:frame:button:1:action" content="link" />
+    <meta name="fc:frame:button:1:target" content="https://baseaapp.vercel.app/ready-test.html" />
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 { font-size: 2rem; margin-bottom: 20px; }
+        .status {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 0.9rem;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        button {
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        button:hover { transform: translateY(-2px); }
+        .btn-secondary { background: #8b5cf6; }
+        .btn-danger { background: #ef4444; }
+        .success { color: #22c55e; }
+        .error { color: #ef4444; }
+        .info { color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Ready Signal Test</h1>
+        <p>Test Farcaster SDK ready() function</p>
+        
+        <div class="status" id="log">
+            <div class="info">🔄 Initializing SDK...</div>
+        </div>
+        
+        <div>
+            <button onclick="testReady()">🚀 Test Ready</button>
+            <button onclick="testMultiple()" class="btn-secondary">🔄 Multiple Ready</button>
+            <button onclick="clearLog()" class="btn-danger">🗑️ Clear Log</button>
+        </div>
+        
+        <div style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">
+            <p>Environment: <span id="env">Detecting...</span></p>
+            <p>SDK Status: <span id="sdk-status">Checking...</span></p>
+        </div>
+    </div>
+
+    <script>
+        const log = document.getElementById('log');
+        const envSpan = document.getElementById('env');
+        const sdkStatus = document.getElementById('sdk-status');
+        
+        function addLog(message, type = 'info') {
+            const time = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `[${time}] ${message}`;
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function clearLog() {
+            log.innerHTML = '<div class="info">🗑️ Log cleared</div>';
+        }
+        
+        // Environment detection
+        const isInIframe = window.self !== window.top;
+        const isFarcaster = isInIframe && (
+            document.referrer.includes('farcaster') || 
+            document.referrer.includes('warpcast') ||
+            window.location.search.includes('farcaster')
+        );
+        
+        envSpan.textContent = isInIframe ? (isFarcaster ? 'Farcaster Iframe' : 'Generic Iframe') : 'Direct Browser';
+        
+        // Enhanced SDK with detailed logging
+        window.sdk = {
+            actions: {
+                ready: function() {
+                    addLog('🚀 sdk.actions.ready() called', 'info');
+                    
+                    try {
+                        if (isInIframe && window.parent) {
+                            const messages = [
+                                'ready',
+                                { type: 'ready' },
+                                { type: 'sdk_ready', ready: true },
+                                { type: 'miniapp_ready' },
+                                { type: 'frame_ready' }
+                            ];
+                            
+                            let sentCount = 0;
+                            messages.forEach((msg, index) => {
+                                try {
+                                    window.parent.postMessage(msg, '*');
+                                    sentCount++;
+                                } catch (e) {
+                                    addLog(`❌ Message ${index + 1} failed: ${e.message}`, 'error');
+                                }
+                            });
+                            
+                            addLog(`✅ Sent ${sentCount}/${messages.length} messages to parent`, 'success');
+                        } else {
+                            addLog('ℹ️ Not in iframe - ready called locally', 'info');
+                        }
+                        
+                        // Dispatch events
+                        window.dispatchEvent(new CustomEvent('sdk_ready'));
+                        addLog('📡 Custom events dispatched', 'success');
+                        
+                        return Promise.resolve();
+                    } catch (error) {
+                        addLog(`❌ Ready error: ${error.message}`, 'error');
+                        return Promise.reject(error);
+                    }
+                }
+            }
+        };
+        
+        // Check SDK status
+        if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
+            sdkStatus.textContent = '✅ Available';
+            sdkStatus.className = 'success';
+        } else {
+            sdkStatus.textContent = '❌ Not Found';
+            sdkStatus.className = 'error';
+        }
+        
+        // Auto-ready calls
+        function autoReady() {
+            addLog('🔄 Auto-ready sequence starting...', 'info');
+            
+            const delays = [0, 10, 50, 100, 250, 500, 1000];
+            delays.forEach((delay, index) => {
+                setTimeout(() => {
+                    try {
+                        window.sdk.actions.ready();
+                        addLog(`✅ Auto-ready ${index + 1}/${delays.length} completed`, 'success');
+                    } catch (e) {
+                        addLog(`❌ Auto-ready ${index + 1} failed: ${e.message}`, 'error');
+                    }
+                }, delay);
+            });
+        }
+        
+        // Message listener
+        window.addEventListener('message', function(event) {
+            // Filter out wallet noise
+            if (event.data && typeof event.data === 'object' && event.data.target) {
+                const target = event.data.target.toLowerCase();
+                if (target.includes('metamask') || target.includes('wallet') || target.includes('extension')) {
+                    return; // Skip wallet messages
+                }
+            }
+            
+            addLog(`📨 Message received: ${JSON.stringify(event.data)} from ${event.origin}`, 'info');
+            
+            const triggers = ['ping', 'ready?', 'request_ready', 'init'];
+            const data = typeof event.data === 'string' ? event.data : event.data?.type;
+            
+            if (triggers.includes(data)) {
+                addLog('🔄 Responding to ready request...', 'info');
+                window.sdk.actions.ready();
+            }
+        });
+        
+        // Manual test functions
+        function testReady() {
+            addLog('🧪 Manual ready test started', 'info');
+            try {
+                window.sdk.actions.ready();
+                addLog('✅ Manual ready test completed', 'success');
+            } catch (e) {
+                addLog(`❌ Manual ready test failed: ${e.message}`, 'error');
+            }
+        }
+        
+        function testMultiple() {
+            addLog('🧪 Multiple ready test started', 'info');
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    try {
+                        window.sdk.actions.ready();
+                        addLog(`✅ Multiple test ${i + 1}/5 completed`, 'success');
+                    } catch (e) {
+                        addLog(`❌ Multiple test ${i + 1}/5 failed: ${e.message}`, 'error');
+                    }
+                }, i * 100);
+            }
+        }
+        
+        // Initialize
+        addLog('🎯 SDK Test Page Initialized', 'success');
+        addLog(`🔍 Environment: ${envSpan.textContent}`, 'info');
+        addLog(`🔧 SDK Status: ${sdkStatus.textContent}`, sdkStatus.className);
+        
+        // Start auto-ready sequence
+        setTimeout(autoReady, 100);
+    </script>
+</body>
+</html>

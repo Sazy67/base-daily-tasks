@@ -1,11 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Web3Service } from '@/lib/web3'
 import { DAILY_TASKS, SPIN_WHEEL_COST, SPIN_WHEEL_FEE, Task } from '@/lib/tasks'
+import { Web3Service } from '@/lib/web3'
 import { RevenueTracker } from '@/lib/revenue'
 import { ReferralSystem } from '@/lib/referral'
-import { baseSdk } from '@/lib/base-sdk'
 import { FarcasterSDK } from '@/lib/farcaster-sdk'
 import ThemeToggle from '@/components/ThemeToggle'
 
@@ -46,8 +45,10 @@ export default function Home() {
   const [showWalletSelector, setShowWalletSelector] = useState(false)
   const [availableWallets, setAvailableWallets] = useState<any[]>([])
   const [walletType, setWalletType] = useState<string>('')
+  const [isInIframe, setIsInIframe] = useState(false)
+  const [isFarcaster, setIsFarcaster] = useState(false)
 
-  // Services
+  // Services - NORMAL INITIALIZATION
   const [web3Service] = useState(new Web3Service())
   const [revenueTracker] = useState(RevenueTracker.getInstance())
   const [referralSystem] = useState(ReferralSystem.getInstance())
@@ -110,41 +111,94 @@ export default function Home() {
     }
   }
 
-  // Farcaster SDK Ready Signal - En öncelikli
+  // EXACT Farcaster Ready Signal - Official Format Only
   useEffect(() => {
-    const sendReadySignal = async () => {
+    let mounted = true
+    
+    const sendExactReadySignal = async () => {
+      if (!mounted) return
+      
       try {
-        console.log('🚀 Farcaster Mini App ready signal gönderiliyor...')
+        console.log('🟣 EXACT Farcaster ready signal starting...')
         
-        // Farcaster SDK ready
-        await farcasterSDK.ready()
+        // 1. Check if we're in iframe
+        const isInIframe = window.parent !== window
+        console.log('🔍 Environment check:', { isInIframe, referrer: document.referrer })
         
-        // Base SDK ready
-        if ((window as any).sdk?.actions?.ready) {
-          (window as any).sdk.actions.ready()
-          console.log('✅ Base SDK ready() çağrıldı')
+        if (isInIframe && window.parent) {
+          // ONLY the EXACT format from Farcaster documentation
+          window.parent.postMessage({
+            type: 'sdk.ready'
+          }, '*')
+          
+          console.log('✅ EXACT ready signal sent: { type: "sdk.ready" }')
         }
         
-        console.log('✅ Tüm ready signals gönderildi')
+        // 2. Global SDK ready call
+        if ((window as any).sdk?.actions?.ready) {
+          await (window as any).sdk.actions.ready()
+          console.log('✅ Global SDK ready called')
+        }
+        
+        // 3. Custom FarcasterSDK
+        await farcasterSDK.ready()
+        console.log('✅ FarcasterSDK ready called')
+        
+        console.log('🎉 EXACT ready sequence completed')
+        
       } catch (error) {
-        console.error('Ready signal error:', error)
+        console.error('❌ Exact ready signal error:', error)
       }
     }
     
-    // Hemen ready signal gönder
-    sendReadySignal()
+    // IMMEDIATE call - most critical
+    sendExactReadySignal()
     
-    // Tekrar gönder (güvenlik için)
-    setTimeout(sendReadySignal, 100)
-    setTimeout(sendReadySignal, 500)
+    // Minimal backup calls
+    setTimeout(() => {
+      if (mounted) {
+        console.log('🔄 Backup ready (10ms)')
+        sendExactReadySignal()
+      }
+    }, 10)
+    
+    setTimeout(() => {
+      if (mounted) {
+        console.log('🔄 Final ready (100ms)')
+        sendExactReadySignal()
+      }
+    }, 100)
+    
+    // Message listener for ping
+    const handleMessage = (event: MessageEvent) => {
+      if (!mounted) return
+      
+      if (event.data === 'ping' || event.data?.type === 'ping') {
+        console.log('📨 Ping received, sending exact ready...')
+        sendExactReadySignal()
+      }
+    }
+    
+    window.addEventListener('message', handleMessage)
+    
+    return () => {
+      mounted = false
+      window.removeEventListener('message', handleMessage)
+    }
   }, [farcasterSDK])
 
-  // Otomatik wallet initialization
+  // Otomatik wallet initialization - DISABLED IN IFRAME
   useEffect(() => {
     let mounted = true
     
     const initializeAutoWallet = async () => {
       if (!mounted) return
+      
+      // SKIP AUTO WALLET IN IFRAME
+      if (isInIframe) {
+        console.log('🚫 Iframe mode: Skipping auto wallet connection')
+        return
+      }
       
       try {
         console.log('🔄 Otomatik wallet detection başlatılıyor...')
@@ -172,7 +226,7 @@ export default function Home() {
           setWalletType(web3Service.getWalletType())
           
           // Base ağına geç
-          await web3Service.ensureBaseNetwork()
+          if (web3Service) await web3Service.ensureBaseNetwork()
           
           // Bakiyeyi güncelle
           await updateBalance(address)
@@ -250,6 +304,7 @@ export default function Home() {
       
       try {
         // SADECE FARCASTER WALLET ÜZERİNDEN AĞ KONTROLÜ
+        if (!web3Service) return
         const chainId = await web3Service.getCurrentNetwork()
         
         if (mounted && chainId) {
@@ -342,6 +397,7 @@ export default function Home() {
       
       try {
         console.log('🔍 Farcaster wallets kontrol ediliyor...')
+        if (!web3Service) return
         const wallets = await web3Service.getAvailableWallets()
         
         if (mounted) {
@@ -381,7 +437,7 @@ export default function Home() {
 
   const completeTask = async (taskId: string) => {
     const task = tasks.find(t => t.id === taskId)
-    if (!task || task.completed || loading) return
+    if (!task || task.completed || loading || isInIframe) return
 
     // Minimum bakiye kontrolü
     if (task.minBalance && parseFloat(ethBalance) < parseFloat(task.minBalance)) {
@@ -404,6 +460,7 @@ export default function Home() {
       switch (taskId) {
         case 'make_transaction':
           // Küçük bir işlem yap
+          if (!web3Service) return
           const txHash = await web3Service.sendTransaction(walletAddress, '0.001')
           success = !!txHash
           if (success) alert(`✅ İşlem başarılı! Hash: ${txHash}`)
@@ -443,6 +500,7 @@ export default function Home() {
 
       if (success) {
         // Fee ödeme işlemi
+        if (!web3Service) return
         const feeHash = await web3Service.collectFee(task.feeAmount, walletAddress, 'task_fee', task.id)
         
         if (feeHash) {
@@ -473,7 +531,7 @@ export default function Home() {
 
   // Farcaster Frame wallet bağlantısı
   const connectFarcasterWallet = async () => {
-    if (loading) return
+    if (loading || isInIframe) return
     
     setLoading(true)
     
@@ -496,7 +554,7 @@ export default function Home() {
           setWalletType('Farcaster Wallet')
           
           // Base ağına geç
-          await web3Service.ensureBaseNetwork()
+          if (web3Service) await web3Service.ensureBaseNetwork()
           
           // Bakiyeyi güncelle
           await updateBalance(walletAddr)
@@ -512,6 +570,7 @@ export default function Home() {
       } else {
         // Fallback: Manuel wallet bağlantısı
         console.log('⚠️ Farcaster Frame context bulunamadı, manuel bağlantı deneniyor...')
+        if (!web3Service) return
         const address = await web3Service.connectWallet()
         
         if (address) {
@@ -519,7 +578,7 @@ export default function Home() {
           setWalletConnected(true)
           setWalletType('Farcaster Wallet')
           
-          await web3Service.ensureBaseNetwork()
+          if (web3Service) await web3Service.ensureBaseNetwork()
           await updateBalance(address)
           
           const refInfo = referralSystem.getUserReferralInfo(address)
@@ -549,7 +608,7 @@ export default function Home() {
 
   // ESKI WALLET BAĞLANTISI (Fallback)
   const connectWallet = async (selectedProvider?: any) => {
-    if (loading) return // Zaten işlem devam ediyorsa çık
+    if (loading || isInIframe) return // Zaten işlem devam ediyorsa çık
     
     setLoading(true)
     
@@ -557,6 +616,7 @@ export default function Home() {
       console.log('🟣 SADECE Farcaster Wallet bağlantısı başlatılıyor...')
       
       // Farcaster Wallet ile bağlan
+      if (!web3Service) return
       const address = await web3Service.connectWallet()
       
       if (address) {
@@ -569,6 +629,7 @@ export default function Home() {
         
         // Base ağına geç
         console.log('🌐 Base ağına geçiliyor...')
+        if (!web3Service) return
         const switched = await web3Service.ensureBaseNetwork()
         if (!switched) {
           console.log('⚠️ Base ağına geçilemedi, devam ediliyor...')
@@ -623,10 +684,13 @@ export default function Home() {
   }
 
   const handleWalletSelection = async () => {
+    if (isInIframe) return
+    
     console.log('🟣 Farcaster Wallet seçimi başlatılıyor...')
     
     try {
       // Farcaster wallet kontrolü
+      if (!web3Service) return
       const wallets = await web3Service.getAvailableWallets()
       
       if (wallets.length === 0) {
@@ -670,13 +734,14 @@ export default function Home() {
   }
 
   const spinWheel = async () => {
-    if (!canSpin() || isSpinning || loading) return
+    if (!canSpin() || isSpinning || loading || isInIframe) return
 
     setIsSpinning(true)
     setLoading(true)
 
     try {
       // Çevirme ücreti + fee öde
+      if (!web3Service) return
       const totalCost = (parseFloat(SPIN_WHEEL_COST) + parseFloat(SPIN_WHEEL_FEE)).toString()
       const feeHash = await web3Service.collectFee(totalCost, walletAddress, 'spin_fee')
       
@@ -720,8 +785,71 @@ export default function Home() {
   const getLevel = () => Math.floor(points / 100) + 1
   const getProgress = () => points % 100
 
-  // Ana sayfa artık direkt görev sayfası - cüzdan bağlantısı header'da
+  // IFRAME-SPECIFIC UI
+  if (isInIframe) {
+    return (
+      <div className="container iframe-mode">
+        <div style={{ 
+          textAlign: 'center', 
+          padding: '40px 20px',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          borderRadius: '20px',
+          color: 'white'
+        }}>
+          <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🚀</div>
+          <h1 style={{ fontSize: '2.5rem', marginBottom: '15px' }}>Base Daily Tasks</h1>
+          <p style={{ fontSize: '1.2rem', marginBottom: '25px', opacity: 0.9 }}>
+            🎯 Günlük görevler • 🎰 Çarkıfelek • 💰 ETH ödülleri
+          </p>
+          
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '15px',
+            padding: '25px',
+            marginBottom: '25px'
+          }}>
+            <h3 style={{ marginBottom: '15px' }}>🟣 Farcaster Mini App</h3>
+            <p style={{ opacity: 0.8, lineHeight: '1.6' }}>
+              Base ağında günlük görevleri tamamlayın, çarkıfelek çevirin ve ETH ödülleri kazanın!
+            </p>
+          </div>
+          
+          <button
+            onClick={() => {
+              if (window.parent && window.parent !== window) {
+                window.parent.postMessage({ type: 'open_app', url: 'https://baseaapp.vercel.app' }, '*');
+              } else {
+                window.open('https://baseaapp.vercel.app', '_blank');
+              }
+            }}
+            style={{
+              background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+              color: 'white',
+              border: 'none',
+              padding: '15px 30px',
+              borderRadius: '10px',
+              fontSize: '1.1rem',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 15px rgba(139, 92, 246, 0.3)'
+            }}
+          >
+            🚀 Uygulamayı Aç
+          </button>
+          
+          <p style={{ 
+            marginTop: '20px', 
+            fontSize: '0.9rem', 
+            opacity: 0.7 
+          }}>
+            💡 Tam deneyim için uygulamayı yeni sekmede açın
+          </p>
+        </div>
+      </div>
+    )
+  }
 
+  // NORMAL WEB UI
   return (
     <div className="container">
       <ThemeToggle />
@@ -847,6 +975,7 @@ export default function Home() {
             </p>
             <button
               onClick={async () => {
+                if (!web3Service) return
                 const switched = await web3Service.ensureBaseNetwork()
                 if (switched) {
                   window.location.reload()

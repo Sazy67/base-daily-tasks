@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base Daily Tasks - Meta Test</title>
+    
+    <!-- COMPREHENSIVE FARCASTER META TAGS -->
+    
+    <!-- Frame Meta Tags - Original Format -->
+    <meta name="fc:frame" content="vNext" />
+    <meta name="fc:frame:image" content="https://baseaapp.vercel.app/baseikon.png" />
+    <meta name="fc:frame:button:1" content="🎯 Open App" />
+    <meta name="fc:frame:button:1:action" content="link" />
+    <meta name="fc:frame:button:1:target" content="https://baseaapp.vercel.app/meta-test.html" />
+    
+    <!-- Frame Meta Tags - Alternative Format -->
+    <meta property="fc:frame" content="vNext" />
+    <meta property="fc:frame:image" content="https://baseaapp.vercel.app/baseikon.png" />
+    <meta property="fc:frame:button:1" content="🎯 Open App" />
+    <meta property="fc:frame:button:1:action" content="link" />
+    <meta property="fc:frame:button:1:target" content="https://baseaapp.vercel.app/meta-test.html" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Base Daily Tasks" />
+    <meta property="og:description" content="Complete daily tasks and earn rewards on Base network" />
+    <meta property="og:image" content="https://baseaapp.vercel.app/baseikon.png" />
+    <meta property="og:url" content="https://baseaapp.vercel.app/meta-test.html" />
+    <meta property="og:type" content="website" />
+    
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Base Daily Tasks" />
+    <meta name="twitter:description" content="Complete daily tasks and earn rewards on Base network" />
+    <meta name="twitter:image" content="https://baseaapp.vercel.app/baseikon.png" />
+    
+    <!-- Farcaster Specific Meta Tags -->
+    <meta name="farcaster:frame" content="vNext" />
+    <meta name="farcaster:frame:image" content="https://baseaapp.vercel.app/baseikon.png" />
+    <meta name="farcaster:frame:button:1" content="🎯 Open App" />
+    <meta name="farcaster:frame:button:1:action" content="link" />
+    <meta name="farcaster:frame:button:1:target" content="https://baseaapp.vercel.app/meta-test.html" />
+    
+    <!-- Mini App Meta Tags -->
+    <meta name="miniapp" content="true" />
+    <meta name="miniapp:name" content="Base Daily Tasks" />
+    <meta name="miniapp:description" content="Complete daily tasks and earn rewards on Base network" />
+    <meta name="miniapp:icon" content="https://baseaapp.vercel.app/baseikon.png" />
+    <meta name="miniapp:url" content="https://baseaapp.vercel.app/meta-test.html" />
+    
+    <!-- App Meta Tags -->
+    <meta name="application-name" content="Base Daily Tasks" />
+    <meta name="apple-mobile-web-app-title" content="Base Daily Tasks" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    
+    <!-- SIMPLE SDK -->
+    <script>
+        console.log('🏷️ META-TEST SDK Start');
+        
+        var isInIframe = window.self !== window.top;
+        console.log('🔍 Environment:', {
+            isInIframe: isInIframe,
+            referrer: document.referrer,
+            userAgent: navigator.userAgent.substring(0, 50),
+            location: window.location.href
+        });
+        
+        // SIMPLE SDK
+        window.sdk = {
+            actions: {
+                ready: function() {
+                    console.log('🏷️ META-TEST ready() called');
+                    
+                    if (isInIframe && window.parent) {
+                        window.parent.postMessage({ type: 'sdk.ready' }, '*');
+                        console.log('✅ META-TEST ready sent');
+                    }
+                    
+                    return Promise.resolve();
+                }
+            }
+        };
+        
+        // IMMEDIATE ready
+        window.sdk.actions.ready();
+        setTimeout(function() { window.sdk.actions.ready(); }, 10);
+        setTimeout(function() { window.sdk.actions.ready(); }, 100);
+        
+        console.log('🏷️ META-TEST SDK Complete');
+    </script>
+</head>
+<body style="margin:0;padding:20px;font-family:Arial;background:linear-gradient(135deg,#667eea,#764ba2);color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;">
+    
+    <div style="text-align:center;max-width:400px;width:100%;">
+        <h1 style="font-size:2rem;margin-bottom:20px;">🏷️ Meta Tags Test</h1>
+        <p style="font-size:1.1rem;margin-bottom:25px;">Comprehensive Meta Tags + Simple SDK</p>
+        
+        <div style="background:rgba(255,255,255,0.1);padding:20px;border-radius:12px;margin-bottom:25px;">
+            <div style="font-size:1.5rem;margin-bottom:10px;">🏷️</div>
+            <p style="margin:0;font-size:1rem;">All Meta Tag Formats</p>
+        </div>
+        
+        <button onclick="testReady()" style="background:#22c55e;color:white;border:none;padding:15px 30px;border-radius:8px;font-size:1.1rem;cursor:pointer;width:100%;margin-bottom:15px;">
+            🚀 Test Ready
+        </button>
+        
+        <div id="status" style="padding:15px;background:rgba(0,0,0,0.2);border-radius:8px;font-size:0.9rem;display:none;"></div>
+    </div>
+    
+    <script>
+        function testReady() {
+            try {
+                window.sdk.actions.ready();
+                document.getElementById('status').style.display = 'block';
+                document.getElementById('status').innerHTML = '✅ Ready signal sent!<br>Meta Tags Test<br>Time: ' + new Date().toLocaleTimeString();
+            } catch (e) {
+                document.getElementById('status').style.display = 'block';
+                document.getElementById('status').innerHTML = '❌ Error: ' + e.message;
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📄 META-TEST DOM ready');
+            window.sdk.actions.ready();
+        });
+        
+        window.addEventListener('load', function() {
+            console.log('🌐 META-TEST Window load');
+            window.sdk.actions.ready();
+        });
+        
+        console.log('🏷️ META-TEST Page Complete');
+    </script>
+</body>
+</html>

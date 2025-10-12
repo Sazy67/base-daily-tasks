@@ -36,12 +36,17 @@ export default function RootLayout({
         <meta name="miniapp-ready" content="true" />
         <meta name="sdk-version" content="1.0.0" />
         <meta name="base-sdk-ready" content="true" />
-        {/* Farcaster Mini App Meta Tags */}
-        <meta name="fc:frame" content="vNext" />
-        <meta name="fc:frame:image" content="https://baseaapp.vercel.app/frame-image.png" />
-        <meta name="fc:frame:button:1" content="🎯 Open App" />
+        {/* Farcaster Mini App Meta Tags - NEW FORMAT */}
+        <meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://baseaapp.vercel.app/baseikon.png","url":"https://baseaapp.vercel.app/iframe.html"}' />
+        
+        {/* Backward Compatibility */}
+        <meta name="fc:frame" content='{"version":"1","imageUrl":"https://baseaapp.vercel.app/baseikon.png","url":"https://baseaapp.vercel.app/iframe.html"}' />
+        
+        {/* Traditional Frame Tags for Compatibility */}
+        <meta name="fc:frame:image" content="https://baseaapp.vercel.app/baseikon.png" />
+        <meta name="fc:frame:button:1" content="🚀 Open App" />
         <meta name="fc:frame:button:1:action" content="link" />
-        <meta name="fc:frame:button:1:target" content="https://baseaapp.vercel.app" />
+        <meta name="fc:frame:button:1:target" content="https://baseaapp.vercel.app/iframe.html" />
 
         {/* Farcaster Mini App Specific */}
         <meta name="farcaster:miniapp" content="true" />
@@ -53,67 +58,82 @@ export default function RootLayout({
         <meta property="og:image" content="https://baseaapp.vercel.app/og-image.png" />
         <meta property="og:url" content="https://baseaapp.vercel.app" />
 
-        {/* Farcaster SDK - Zero Dependencies */}
+        {/* ULTRA-EARLY FARCASTER SDK - Before Everything */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              try {
-                window.sdk = {
-                  actions: {
-                    ready: function() {
-                      try {
-                        if (window.parent && window.parent !== window) {
-                          window.parent.postMessage({ type: 'sdk_ready', ready: true }, '*');
-                          window.parent.postMessage('ready', '*');
-                        }
-                      } catch (e) {}
-                      return Promise.resolve();
-                    },
-                    share: function() { return Promise.resolve(); },
-                    close: function() { 
-                      try { 
-                        if (window.parent && window.parent !== window) {
-                          window.parent.postMessage({ type: 'close' }, '*'); 
-                        }
-                      } catch (e) {} 
-                    },
-                    openUrl: function(url) { 
-                      try { 
-                        window.open(url, '_blank'); 
-                      } catch (e) {} 
+              console.log('🚀 ULTRA-EARLY Farcaster SDK Init');
+              
+              // IMMEDIATE ENVIRONMENT CHECK
+              const isInIframe = window.self !== window.top;
+              console.log('🔍 Iframe check:', isInIframe);
+              
+              // ULTRA-SIMPLE SDK - Exact Farcaster Format
+              window.sdk = {
+                actions: {
+                  ready: function() {
+                    console.log('🟣 ULTRA-EARLY ready() called');
+                    
+                    if (isInIframe && window.parent) {
+                      // EXACT Farcaster format - ONLY this
+                      window.parent.postMessage({
+                        type: 'sdk.ready'
+                      }, '*');
+                      console.log('✅ EXACT ready sent immediately');
                     }
+                    
+                    return Promise.resolve();
                   }
-                };
-                
-                window._ready = true;
-                window._miniappReady = true;
-                
-                // Simple ready call
-                if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
-                  window.sdk.actions.ready();
-                  setTimeout(function() { window.sdk.actions.ready(); }, 100);
-                  setTimeout(function() { window.sdk.actions.ready(); }, 500);
                 }
-                
-                // Listen for messages
-                window.addEventListener('message', function(e) {
-                  try {
-                    if (e.data === 'ping' || (e.data && e.data.type === 'request_ready')) {
-                      if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
-                        window.sdk.actions.ready();
-                      }
-                    }
-                  } catch (e) {}
-                });
-              } catch (e) {}
+              };
+              
+              // ULTRA-IMMEDIATE READY CALLS
+              console.log('🔄 Calling ready ULTRA-EARLY...');
+              window.sdk.actions.ready();
+              
+              // BACKUP CALLS
+              setTimeout(function() { window.sdk.actions.ready(); }, 0);
+              setTimeout(function() { window.sdk.actions.ready(); }, 1);
+              setTimeout(function() { window.sdk.actions.ready(); }, 5);
+              setTimeout(function() { window.sdk.actions.ready(); }, 10);
+              
+              console.log('🎯 ULTRA-EARLY SDK Complete');
             `,
           }}
         />
       </head>
       <body>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              console.log('🔥 BODY-START Farcaster ready');
+              
+              // BODY START - Another ready attempt
+              if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
+                window.sdk.actions.ready();
+                console.log('✅ BODY-START ready called');
+              }
+            `,
+          }}
+        />
+        
         <ThemeProvider>
           {children}
         </ThemeProvider>
+        
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              console.log('🔥 BODY-END Farcaster ready');
+              
+              // BODY END - Final ready attempt
+              if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
+                window.sdk.actions.ready();
+                console.log('✅ BODY-END ready called');
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   )

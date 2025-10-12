@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Base Daily Tasks - New Farcaster Format</title>
+    
+    <!-- Farcaster Frame Meta Tags -->
+    <meta name="fc:frame" content="vNext" />
+    <meta name="fc:frame:image" content="https://baseaapp.vercel.app/baseikon.png" />
+    <meta name="fc:frame:button:1" content="🎯 Open App" />
+    <meta name="fc:frame:button:1:action" content="link" />
+    <meta name="fc:frame:button:1:target" content="https://baseaapp.vercel.app/farcaster-new.html" />
+    
+    <!-- NEW FARCASTER SDK FORMAT - 2024 -->
+    <script>
+        console.log('🆕 NEW Farcaster SDK Start');
+        
+        var isInIframe = window.self !== window.top;
+        console.log('🔍 Iframe:', isInIframe);
+        
+        // TRY ALL POSSIBLE NEW FORMATS
+        function sendAllReadyFormats() {
+            if (!isInIframe || !window.parent) {
+                console.log('ℹ️ Not in iframe');
+                return;
+            }
+            
+            console.log('🔄 Sending ALL possible ready formats...');
+            
+            // FORMAT 1: Original
+            try {
+                window.parent.postMessage({ type: 'sdk.ready' }, '*');
+                console.log('✅ Format 1: sdk.ready');
+            } catch (e) { console.error('❌ Format 1 failed:', e); }
+            
+            // FORMAT 2: Without dot
+            try {
+                window.parent.postMessage({ type: 'sdk_ready' }, '*');
+                console.log('✅ Format 2: sdk_ready');
+            } catch (e) { console.error('❌ Format 2 failed:', e); }
+            
+            // FORMAT 3: Frame ready
+            try {
+                window.parent.postMessage({ type: 'frame.ready' }, '*');
+                console.log('✅ Format 3: frame.ready');
+            } catch (e) { console.error('❌ Format 3 failed:', e); }
+            
+            // FORMAT 4: App ready
+            try {
+                window.parent.postMessage({ type: 'app.ready' }, '*');
+                console.log('✅ Format 4: app.ready');
+            } catch (e) { console.error('❌ Format 4 failed:', e); }
+            
+            // FORMAT 5: Miniapp ready
+            try {
+                window.parent.postMessage({ type: 'miniapp.ready' }, '*');
+                console.log('✅ Format 5: miniapp.ready');
+            } catch (e) { console.error('❌ Format 5 failed:', e); }
+            
+            // FORMAT 6: Simple ready
+            try {
+                window.parent.postMessage({ type: 'ready' }, '*');
+                console.log('✅ Format 6: ready');
+            } catch (e) { console.error('❌ Format 6 failed:', e); }
+            
+            // FORMAT 7: String ready
+            try {
+                window.parent.postMessage('ready', '*');
+                console.log('✅ Format 7: "ready" string');
+            } catch (e) { console.error('❌ Format 7 failed:', e); }
+            
+            // FORMAT 8: Farcaster specific
+            try {
+                window.parent.postMessage({ type: 'farcaster.ready' }, '*');
+                console.log('✅ Format 8: farcaster.ready');
+            } catch (e) { console.error('❌ Format 8 failed:', e); }
+            
+            // FORMAT 9: With data
+            try {
+                window.parent.postMessage({ 
+                    type: 'sdk.ready', 
+                    data: { ready: true, timestamp: Date.now() }
+                }, '*');
+                console.log('✅ Format 9: sdk.ready with data');
+            } catch (e) { console.error('❌ Format 9 failed:', e); }
+            
+            // FORMAT 10: Action format
+            try {
+                window.parent.postMessage({ 
+                    action: 'ready',
+                    source: 'sdk'
+                }, '*');
+                console.log('✅ Format 10: action ready');
+            } catch (e) { console.error('❌ Format 10 failed:', e); }
+            
+            console.log('📊 All 10 ready formats sent');
+        }
+        
+        // NEW SDK STRUCTURE
+        window.sdk = {
+            actions: {
+                ready: function() {
+                    console.log('🆕 NEW SDK ready() called');
+                    sendAllReadyFormats();
+                    return Promise.resolve();
+                }
+            }
+        };
+        
+        // IMMEDIATE CALLS
+        console.log('🔄 NEW SDK calling ready immediately...');
+        sendAllReadyFormats();
+        
+        // BACKUP CALLS
+        setTimeout(sendAllReadyFormats, 0);
+        setTimeout(sendAllReadyFormats, 1);
+        setTimeout(sendAllReadyFormats, 10);
+        setTimeout(sendAllReadyFormats, 50);
+        setTimeout(sendAllReadyFormats, 100);
+        
+        console.log('🆕 NEW SDK Complete');
+    </script>
+</head>
+<body style="margin:0;padding:20px;font-family:Arial;background:linear-gradient(135deg,#667eea,#764ba2);color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;">
+    
+    <div style="text-align:center;max-width:400px;width:100%;">
+        <h1 style="font-size:2rem;margin-bottom:20px;">🆕 New Farcaster Format</h1>
+        <p style="font-size:1.1rem;margin-bottom:25px;">Testing 10 Different Ready Formats</p>
+        
+        <div style="background:rgba(255,255,255,0.1);padding:20px;border-radius:12px;margin-bottom:25px;">
+            <div style="font-size:1.5rem;margin-bottom:10px;">🔬</div>
+            <p style="margin:0;font-size:1rem;">Comprehensive Format Test</p>
+        </div>
+        
+        <button onclick="testAll()" style="background:#22c55e;color:white;border:none;padding:15px 30px;border-radius:8px;font-size:1.1rem;cursor:pointer;width:100%;margin-bottom:15px;">
+            🚀 Test All Formats
+        </button>
+        
+        <div id="status" style="padding:15px;background:rgba(0,0,0,0.2);border-radius:8px;font-size:0.9rem;display:none;"></div>
+    </div>
+    
+    <script>
+        // Test function
+        function testAll() {
+            try {
+                sendAllReadyFormats();
+                document.getElementById('status').style.display = 'block';
+                document.getElementById('status').innerHTML = '✅ All 10 ready formats sent!<br>Check console for details<br>Time: ' + new Date().toLocaleTimeString();
+            } catch (e) {
+                document.getElementById('status').style.display = 'block';
+                document.getElementById('status').innerHTML = '❌ Error: ' + e.message;
+            }
+        }
+        
+        // DOM ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📄 DOM ready - sending all formats');
+            sendAllReadyFormats();
+        });
+        
+        // Window load
+        window.addEventListener('load', function() {
+            console.log('🌐 Window load - sending all formats');
+            sendAllReadyFormats();
+        });
+        
+        console.log('🆕 NEW Format Page Complete');
+    </script>
+</body>
+</html>

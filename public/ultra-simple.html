@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Base Daily Tasks - Ultra Simple</title>
+    
+    <!-- Farcaster Frame Meta Tags -->
+    <meta name="fc:frame" content="vNext" />
+    <meta name="fc:frame:image" content="https://baseaapp.vercel.app/baseikon.png" />
+    <meta name="fc:frame:button:1" content="🎯 Open App" />
+    <meta name="fc:frame:button:1:action" content="link" />
+    <meta name="fc:frame:button:1:target" content="https://baseaapp.vercel.app/ultra-simple.html" />
+    
+    <!-- ULTRA-EARLY SDK - Before anything else -->
+    <script>
+        console.log('🚀 ULTRA-SIMPLE SDK Start');
+        
+        // IMMEDIATE environment check
+        var isInIframe = window.self !== window.top;
+        console.log('🔍 Iframe:', isInIframe);
+        
+        // ULTRA-SIMPLE SDK
+        window.sdk = {
+            actions: {
+                ready: function() {
+                    console.log('🟣 ULTRA-SIMPLE ready() called');
+                    
+                    if (isInIframe && window.parent) {
+                        // EXACT Farcaster format
+                        window.parent.postMessage({
+                            type: 'sdk.ready'
+                        }, '*');
+                        console.log('✅ ULTRA-SIMPLE ready sent');
+                    }
+                    
+                    return Promise.resolve();
+                }
+            }
+        };
+        
+        // IMMEDIATE ready calls
+        console.log('🔄 ULTRA-SIMPLE calling ready...');
+        window.sdk.actions.ready();
+        
+        // Backup calls
+        setTimeout(function() { window.sdk.actions.ready(); }, 0);
+        setTimeout(function() { window.sdk.actions.ready(); }, 1);
+        setTimeout(function() { window.sdk.actions.ready(); }, 10);
+        
+        console.log('🎯 ULTRA-SIMPLE SDK Complete');
+    </script>
+</head>
+<body style="margin:0;padding:20px;font-family:Arial;background:linear-gradient(135deg,#667eea,#764ba2);color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;">
+    
+    <!-- BODY START ready call -->
+    <script>
+        console.log('🔥 BODY-START ready');
+        if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
+            window.sdk.actions.ready();
+            console.log('✅ BODY-START ready called');
+        }
+    </script>
+    
+    <div style="text-align:center;max-width:400px;width:100%;">
+        <h1 style="font-size:2rem;margin-bottom:20px;">🎯 Base Daily Tasks</h1>
+        <p style="font-size:1.1rem;margin-bottom:25px;">Ultra Simple - No Next.js</p>
+        
+        <div style="background:rgba(255,255,255,0.1);padding:20px;border-radius:12px;margin-bottom:25px;">
+            <div style="font-size:1.5rem;margin-bottom:10px;">⚡</div>
+            <p style="margin:0;font-size:1rem;">Ultra Fast Ready Signal</p>
+        </div>
+        
+        <button onclick="testReady()" style="background:#22c55e;color:white;border:none;padding:15px 30px;border-radius:8px;font-size:1.1rem;cursor:pointer;width:100%;margin-bottom:15px;">
+            🚀 Test Ready
+        </button>
+        
+        <div id="status" style="padding:15px;background:rgba(0,0,0,0.2);border-radius:8px;font-size:0.9rem;display:none;"></div>
+    </div>
+    
+    <!-- BODY END ready call -->
+    <script>
+        console.log('🔥 BODY-END ready');
+        if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
+            window.sdk.actions.ready();
+            console.log('✅ BODY-END ready called');
+        }
+        
+        // Test function
+        function testReady() {
+            try {
+                window.sdk.actions.ready();
+                document.getElementById('status').style.display = 'block';
+                document.getElementById('status').innerHTML = '✅ Ready signal sent!<br>Ultra Simple Format<br>Time: ' + new Date().toLocaleTimeString();
+            } catch (e) {
+                document.getElementById('status').style.display = 'block';
+                document.getElementById('status').innerHTML = '❌ Error: ' + e.message;
+            }
+        }
+        
+        // DOM ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📄 DOM ready');
+            window.sdk.actions.ready();
+        });
+        
+        // Window load
+        window.addEventListener('load', function() {
+            console.log('🌐 Window load');
+            window.sdk.actions.ready();
+        });
+        
+        console.log('🎯 ULTRA-SIMPLE Page Complete');
+    </script>
+</body>
+</html>

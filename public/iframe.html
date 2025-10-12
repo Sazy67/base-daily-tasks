@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base Daily Tasks</title>
+    
+    <!-- Farcaster Meta Tags -->
+    <meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://baseaapp.vercel.app/baseikon.png","url":"https://baseaapp.vercel.app"}' />
+    <meta name="fc:frame" content='{"version":"1","imageUrl":"https://baseaapp.vercel.app/baseikon.png","url":"https://baseaapp.vercel.app"}' />
+    <meta name="fc:frame:image" content="https://baseaapp.vercel.app/baseikon.png" />
+    <meta name="fc:frame:button:1" content="🚀 Open App" />
+    <meta name="fc:frame:button:1:action" content="link" />
+    <meta name="fc:frame:button:1:target" content="https://baseaapp.vercel.app" />
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 400px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 { font-size: 2.5rem; margin-bottom: 20px; }
+        p { font-size: 1.2rem; margin-bottom: 30px; opacity: 0.9; }
+        
+        .button {
+            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="font-size: 4rem; margin-bottom: 20px;">🚀</div>
+        <h1>Base Daily Tasks</h1>
+        <p>🎯 Günlük görevler • 🎰 Çarkıfelek • 💰 ETH ödülleri</p>
+        
+        <button class="button" onclick="openApp()">
+            🚀 Uygulamayı Aç
+        </button>
+        
+        <p style="font-size: 0.9rem; margin-top: 20px; opacity: 0.7;">
+            💡 Tam deneyim için uygulamayı yeni sekmede açın
+        </p>
+    </div>
+
+    <script>
+        // BASIT SDK
+        window.sdk = {
+            actions: {
+                ready: function() {
+                    console.log('🚀 SDK Ready');
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage('ready', '*');
+                        window.parent.postMessage({ type: 'ready' }, '*');
+                        window.parent.postMessage({ type: 'sdk_ready', ready: true }, '*');
+                    }
+                    return Promise.resolve();
+                }
+            }
+        };
+        
+        // HEMEN READY ÇAĞIR
+        window.sdk.actions.ready();
+        setTimeout(() => window.sdk.actions.ready(), 100);
+        setTimeout(() => window.sdk.actions.ready(), 500);
+        
+        function openApp() {
+            window.open('https://baseaapp.vercel.app', '_blank');
+        }
+        
+        // MESSAGE LISTENER
+        window.addEventListener('message', function(e) {
+            if (e.data === 'ping' || e.data === 'ready?') {
+                window.sdk.actions.ready();
+            }
+        });
+        
+        console.log('🎯 Iframe page loaded');
+    </script>
+</body>
+</html>

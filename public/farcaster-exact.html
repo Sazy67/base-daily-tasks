@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base Daily Tasks - Exact Farcaster Format</title>
+    
+    <!-- Farcaster Frame Meta Tags -->
+    <meta name="fc:frame" content="vNext" />
+    <meta name="fc:frame:image" content="https://baseaapp.vercel.app/baseikon.png" />
+    <meta name="fc:frame:button:1" content="🎯 Open App" />
+    <meta name="fc:frame:button:1:action" content="link" />
+    <meta name="fc:frame:button:1:target" content="https://baseaapp.vercel.app/farcaster-exact.html" />
+</head>
+<body style="margin:0;padding:20px;font-family:Arial;background:linear-gradient(135deg,#667eea,#764ba2);color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;">
+    <div style="text-align:center;max-width:400px;width:100%;">
+        <h1 style="font-size:2rem;margin-bottom:20px;">🎯 Base Daily Tasks</h1>
+        <p style="font-size:1.1rem;margin-bottom:25px;">Exact Farcaster SDK Format</p>
+        
+        <div style="background:rgba(255,255,255,0.1);padding:20px;border-radius:12px;margin-bottom:25px;">
+            <div style="font-size:1.5rem;margin-bottom:10px;">✅</div>
+            <p style="margin:0;font-size:1rem;">Ready for Farcaster</p>
+        </div>
+        
+        <button onclick="testReady()" style="background:#22c55e;color:white;border:none;padding:15px 30px;border-radius:8px;font-size:1.1rem;cursor:pointer;width:100%;margin-bottom:15px;">
+            🚀 Test Ready Signal
+        </button>
+        
+        <div id="status" style="padding:15px;background:rgba(0,0,0,0.2);border-radius:8px;font-size:0.9rem;display:none;"></div>
+    </div>
+
+    <script>
+        // EXACT Farcaster SDK format from official documentation
+        (function() {
+            // Create SDK with EXACT method names and behavior
+            window.sdk = {
+                actions: {
+                    ready() {
+                        console.log('🟣 EXACT Farcaster ready() called');
+                        
+                        // EXACT format from Farcaster documentation
+                        if (window.parent !== window) {
+                            // This is the EXACT format Farcaster expects
+                            window.parent.postMessage({
+                                type: 'sdk.ready'
+                            }, '*');
+                            
+                            console.log('✅ EXACT ready signal sent: { type: "sdk.ready" }');
+                        }
+                        
+                        return Promise.resolve();
+                    },
+                    
+                    close() {
+                        if (window.parent !== window) {
+                            window.parent.postMessage({
+                                type: 'sdk.close'
+                            }, '*');
+                        }
+                    },
+                    
+                    openUrl(url) {
+                        if (window.parent !== window) {
+                            window.parent.postMessage({
+                                type: 'sdk.openUrl',
+                                url: url
+                            }, '*');
+                        } else {
+                            window.open(url, '_blank');
+                        }
+                    }
+                }
+            };
+            
+            // IMMEDIATE ready call - this is critical
+            try {
+                window.sdk.actions.ready();
+                console.log('🚀 Immediate ready() called on script load');
+            } catch (e) {
+                console.error('❌ Immediate ready failed:', e);
+            }
+            
+        })();
+        
+        // DOMContentLoaded ready call
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                window.sdk.actions.ready();
+                console.log('📄 DOMContentLoaded ready() called');
+            } catch (e) {
+                console.error('❌ DOMContentLoaded ready failed:', e);
+            }
+        });
+        
+        // Window load ready call
+        window.addEventListener('load', function() {
+            try {
+                window.sdk.actions.ready();
+                console.log('🌐 Window load ready() called');
+            } catch (e) {
+                console.error('❌ Window load ready failed:', e);
+            }
+        });
+        
+        // Test function
+        function testReady() {
+            try {
+                window.sdk.actions.ready();
+                document.getElementById('status').style.display = 'block';
+                document.getElementById('status').innerHTML = '✅ Ready signal sent!<br>Format: { type: "sdk.ready" }<br>Time: ' + new Date().toLocaleTimeString();
+            } catch (e) {
+                document.getElementById('status').style.display = 'block';
+                document.getElementById('status').innerHTML = '❌ Error: ' + e.message;
+            }
+        }
+    </script>
+</body>
+</html>

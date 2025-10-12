@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Base Daily Tasks</title>
+    
+    <!-- Farcaster Mini App Meta Tags - CORRECT FORMAT -->
+    <meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://baseaapp.vercel.app/baseikon.png","url":"https://baseaapp.vercel.app"}' />
+    
+    <!-- Backward Compatibility -->
+    <meta name="fc:frame" content='{"version":"1","imageUrl":"https://baseaapp.vercel.app/baseikon.png","url":"https://baseaapp.vercel.app"}' />
+    
+    <!-- Traditional Frame Tags -->
+    <meta name="fc:frame:image" content="https://baseaapp.vercel.app/baseikon.png" />
+    <meta name="fc:frame:button:1" content="🚀 Open App" />
+    <meta name="fc:frame:button:1:action" content="link" />
+    <meta name="fc:frame:button:1:target" content="https://baseaapp.vercel.app" />
+    
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #0052ff; 
+            color: white; 
+            text-align: center; 
+            padding: 50px; 
+        }
+        .status { 
+            background: rgba(255,255,255,0.1); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin: 20px 0; 
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 Base Daily Tasks</h1>
+    <div class="status" id="status">🔄 Initializing SDK...</div>
+    <button onclick="testReady()" style="padding: 10px 20px; font-size: 16px;">Test Ready</button>
+    
+    <script>
+        console.log('🎯 Frame test page loaded');
+        
+        // IMMEDIATE SDK SETUP - NO DELAYS
+        window.sdk = {
+            actions: {
+                ready: function() {
+                    console.log('🚀 SDK.ready() CALLED');
+                    document.getElementById('status').innerHTML = '✅ SDK Ready Called!';
+                    
+                    // Send ALL possible ready signals
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage('ready', '*');
+                        window.parent.postMessage({ type: 'ready' }, '*');
+                        window.parent.postMessage({ type: 'sdk_ready', ready: true }, '*');
+                        window.parent.postMessage({ type: 'miniapp_ready' }, '*');
+                        console.log('✅ All ready messages sent');
+                    }
+                    
+                    return Promise.resolve();
+                }
+            }
+        };
+        
+        // CALL READY IMMEDIATELY
+        window.sdk.actions.ready();
+        
+        // Test function
+        function testReady() {
+            console.log('🧪 Manual test');
+            window.sdk.actions.ready();
+        }
+        
+        // Listen for any messages
+        window.addEventListener('message', function(e) {
+            console.log('📨 Message received:', e.data);
+            if (e.data === 'ping' || e.data === 'ready?') {
+                window.sdk.actions.ready();
+            }
+        });
+        
+        // Call ready every 500ms for 10 seconds
+        let readyCount = 0;
+        const readyInterval = setInterval(() => {
+            window.sdk.actions.ready();
+            readyCount++;
+            if (readyCount > 20) {
+                clearInterval(readyInterval);
+            }
+        }, 500);
+        
+        console.log('🎯 SDK initialized and ready signals started');
+    </script>
+</body>
+</html>

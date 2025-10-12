@@ -112,12 +112,31 @@ export default function SimplePage() {
           </button>
           
           <button 
-            onClick={() => {
-              if ((window as any).sdk && (window as any).sdk.actions && (window as any).sdk.actions.ready) {
-                (window as any).sdk.actions.ready();
-                alert('✅ Ready signal sent to Farcaster!');
-              } else {
-                alert('❌ SDK not found');
+            onClick={async () => {
+              try {
+                console.log('🔄 Manual ready signal test...')
+                
+                // Multiple ready attempts
+                if ((window as any).sdk?.actions?.ready) {
+                  await (window as any).sdk.actions.ready()
+                  console.log('✅ SDK ready called')
+                }
+                
+                // Direct parent message
+                if (window.parent && window.parent !== window) {
+                  window.parent.postMessage({ type: 'sdk_ready', ready: true }, '*')
+                  window.parent.postMessage('ready', '*')
+                  console.log('✅ Parent messages sent')
+                }
+                
+                // Global flags
+                ;(window as any)._ready = true
+                ;(window as any)._miniappReady = true
+                
+                alert('✅ Multiple ready signals sent to Farcaster!')
+              } catch (error) {
+                console.error('Ready test error:', error)
+                alert('❌ Error: ' + (error as Error).message)
               }
             }}
             style={{

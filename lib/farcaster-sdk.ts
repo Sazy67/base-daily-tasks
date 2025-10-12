@@ -244,35 +244,79 @@ export class FarcasterSDK {
 
   public async ready(): Promise<void> {
     try {
-      console.log('🟣 Farcaster Mini App ready signal gönderiliyor...')
+      console.log('🟣 ENHANCED Farcaster ready signal başlatılıyor...')
       
+      // 1. Parent window mesajları (iframe için)
       if (window.parent && window.parent !== window) {
-        // Farcaster Mini App ready signals
         const readyMessages = [
+          // Standard Farcaster messages
           { type: 'fc_ready' },
           { type: 'miniapp_ready', ready: true },
           { type: 'frame_ready', ready: true },
-          'ready'
+          { type: 'sdk_ready', ready: true },
+          
+          // Additional compatibility messages
+          { type: 'ready', status: 'success' },
+          { action: 'ready', timestamp: Date.now() },
+          { event: 'ready', source: 'farcaster-sdk' },
+          
+          // Simple string messages
+          'ready',
+          'fc_ready',
+          'miniapp_ready'
         ]
         
-        readyMessages.forEach(message => {
+        let sentCount = 0
+        readyMessages.forEach((message, index) => {
           try {
             window.parent.postMessage(message, '*')
+            sentCount++
           } catch (e) {
-            console.log('Ready message error:', e)
+            console.warn(`Ready message ${index + 1} failed:`, e)
           }
         })
         
-        console.log('✅ Farcaster ready signals gönderildi')
+        console.log(`✅ Sent ${sentCount}/${readyMessages.length} ready messages to parent`)
       }
       
-      // Base SDK ready de çağır
+      // 2. Global window SDK ready
       if ((window as any).sdk?.actions?.ready) {
-        (window as any).sdk.actions.ready()
-        console.log('✅ Base SDK ready çağrıldı')
+        await (window as any).sdk.actions.ready()
+        console.log('✅ Global SDK ready called')
       }
+      
+      // 3. Custom events dispatch
+      const customEvents = ['sdk_ready', 'miniapp_ready', 'farcaster_ready', 'frame_ready']
+      customEvents.forEach(eventName => {
+        try {
+          window.dispatchEvent(new CustomEvent(eventName, { 
+            detail: { timestamp: Date.now(), source: 'farcaster-sdk' }
+          }))
+        } catch (e) {
+          console.warn(`Custom event ${eventName} failed:`, e)
+        }
+      })
+      
+      // 4. Global ready flags
+      ;(window as any)._ready = true
+      ;(window as any)._miniappReady = true
+      ;(window as any)._farcasterReady = true
+      ;(window as any)._sdkReady = true
+      
+      // 5. Console notification
+      console.log('🎉 ALL READY SIGNALS SENT - Farcaster should hide splash screen now')
+      
+      // 6. Delayed retry (for timing issues)
+      setTimeout(() => {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'sdk_ready', ready: true, retry: true }, '*')
+          console.log('🔄 Delayed ready retry sent')
+        }
+      }, 100)
+      
     } catch (error) {
-      console.error('Ready signal error:', error)
+      console.error('❌ Enhanced ready signal error:', error)
+      throw error
     }
   }
 }

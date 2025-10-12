@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base Daily Tasks - Official Farcaster SDK</title>
+    
+    <!-- Farcaster Frame Meta Tags -->
+    <meta name="fc:frame" content="vNext" />
+    <meta name="fc:frame:image" content="https://baseaapp.vercel.app/baseikon.png" />
+    <meta name="fc:frame:button:1" content="🎯 Open App" />
+    <meta name="fc:frame:button:1:action" content="link" />
+    <meta name="fc:frame:button:1:target" content="https://baseaapp.vercel.app/farcaster-official.html" />
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 { font-size: 2rem; margin-bottom: 20px; }
+        .status {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 0.85rem;
+            text-align: left;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        button {
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn-secondary { background: #8b5cf6; }
+        .success { color: #22c55e; }
+        .error { color: #ef4444; }
+        .info { color: #3b82f6; }
+        .warning { color: #f59e0b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🟣 Official Farcaster SDK</h1>
+        <p>Resmi Farcaster SDK formatı ile test</p>
+        
+        <div class="status" id="log">
+            <div class="info">🔄 Initializing official SDK...</div>
+        </div>
+        
+        <div>
+            <button onclick="testReady()">🚀 Test Ready</button>
+            <button onclick="clearLog()" class="btn-secondary">🗑️ Clear</button>
+        </div>
+        
+        <div style="margin-top: 15px; font-size: 0.9rem;">
+            <div>Environment: <span id="env">...</span></div>
+            <div>SDK Status: <span id="sdk-status">...</span></div>
+        </div>
+    </div>
+
+    <script>
+        const log = document.getElementById('log');
+        
+        function addLog(message, type = 'info') {
+            const time = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `[${time}] ${message}`;
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function clearLog() {
+            log.innerHTML = '<div class="info">🗑️ Log cleared</div>';
+        }
+        
+        // Environment detection
+        const isInIframe = window.self !== window.top;
+        document.getElementById('env').textContent = isInIframe ? 'Iframe' : 'Direct';
+        
+        // OFFICIAL FARCASTER SDK - Exact format from documentation
+        window.sdk = {
+            actions: {
+                ready() {
+                    addLog('🟣 OFFICIAL sdk.actions.ready() called', 'info');
+                    
+                    try {
+                        // EXACT Farcaster ready signal format
+                        if (window.parent && window.parent !== window) {
+                            // Primary ready signal - EXACT format from Farcaster docs
+                            window.parent.postMessage({
+                                type: 'sdk.ready'
+                            }, '*');
+                            
+                            addLog('✅ Official ready signal sent: { type: "sdk.ready" }', 'success');
+                            
+                            // Backup signals for compatibility
+                            setTimeout(() => {
+                                window.parent.postMessage('ready', '*');
+                                addLog('✅ Backup ready signal sent: "ready"', 'success');
+                            }, 10);
+                            
+                        } else {
+                            addLog('ℹ️ Not in iframe - ready called locally', 'info');
+                        }
+                        
+                        return Promise.resolve();
+                    } catch (error) {
+                        addLog(`❌ Ready error: ${error.message}`, 'error');
+                        return Promise.reject(error);
+                    }
+                },
+                
+                close() {
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({
+                            type: 'sdk.close'
+                        }, '*');
+                    }
+                },
+                
+                openUrl(url) {
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({
+                            type: 'sdk.openUrl',
+                            url: url
+                        }, '*');
+                    } else {
+                        window.open(url, '_blank');
+                    }
+                }
+            }
+        };
+        
+        // Check SDK status
+        document.getElementById('sdk-status').textContent = 
+            (window.sdk && window.sdk.actions && window.sdk.actions.ready) ? '✅ Available' : '❌ Not Found';
+        
+        // IMMEDIATE ready call - as per Farcaster docs
+        try {
+            window.sdk.actions.ready();
+            addLog('🚀 Immediate ready() called on load', 'success');
+        } catch (e) {
+            addLog(`❌ Immediate ready failed: ${e.message}`, 'error');
+        }
+        
+        // DOMContentLoaded ready call
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                try {
+                    window.sdk.actions.ready();
+                    addLog('📄 DOMContentLoaded ready() called', 'success');
+                } catch (e) {
+                    addLog(`❌ DOMContentLoaded ready failed: ${e.message}`, 'error');
+                }
+            });
+        }
+        
+        // Window load ready call
+        window.addEventListener('load', function() {
+            try {
+                window.sdk.actions.ready();
+                addLog('🌐 Window load ready() called', 'success');
+            } catch (e) {
+                addLog(`❌ Window load ready failed: ${e.message}`, 'error');
+            }
+        });
+        
+        // Message listener for ping requests
+        window.addEventListener('message', function(event) {
+            addLog(`📨 Message received: ${JSON.stringify(event.data)}`, 'info');
+            
+            if (event.data === 'ping' || event.data?.type === 'ping') {
+                addLog('🔄 Ping received, responding with ready', 'warning');
+                window.sdk.actions.ready();
+            }
+        });
+        
+        // Manual test function
+        function testReady() {
+            addLog('🧪 Manual ready test', 'info');
+            try {
+                window.sdk.actions.ready();
+                addLog('✅ Manual ready completed', 'success');
+            } catch (e) {
+                addLog(`❌ Manual ready failed: ${e.message}`, 'error');
+            }
+        }
+        
+        // Initialize
+        addLog('🟣 Official Farcaster SDK initialized', 'success');
+        addLog(`🔍 Environment: ${document.getElementById('env').textContent}`, 'info');
+        addLog(`🔧 SDK Status: ${document.getElementById('sdk-status').textContent}`, 'info');
+        
+        // Additional ready calls with delays (as backup)
+        setTimeout(() => {
+            try {
+                window.sdk.actions.ready();
+                addLog('⏰ Delayed ready (100ms)', 'success');
+            } catch (e) {
+                addLog(`❌ Delayed ready failed: ${e.message}`, 'error');
+            }
+        }, 100);
+        
+        setTimeout(() => {
+            try {
+                window.sdk.actions.ready();
+                addLog('⏰ Delayed ready (500ms)', 'success');
+            } catch (e) {
+                addLog(`❌ Delayed ready failed: ${e.message}`, 'error');
+            }
+        }, 500);
+    </script>
+</body>
+</html>

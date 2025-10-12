@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base Daily Tasks - Simple Test</title>
+    
+    <!-- Farcaster Frame Meta Tags -->
+    <meta name="fc:frame" content="vNext" />
+    <meta name="fc:frame:image" content="https://baseaapp.vercel.app/baseikon.png" />
+    <meta name="fc:frame:button:1" content="🚀 Open App" />
+    <meta name="fc:frame:button:1:action" content="link" />
+    <meta name="fc:frame:button:1:target" content="https://baseaapp.vercel.app" />
+    
+    <!-- Farcaster Mini App -->
+    <meta name="farcaster:miniapp" content="true" />
+    <meta name="farcaster:miniapp:name" content="Base Daily Tasks" />
+    <meta name="farcaster:miniapp:description" content="Complete daily tasks and earn rewards" />
+    <meta name="farcaster:miniapp:icon" content="https://baseaapp.vercel.app/baseikon.png" />
+    
+    <!-- Base Mini App -->
+    <meta name="base-miniapp" content="true" />
+    <meta name="base-network" content="base" />
+    <meta name="miniapp-ready" content="true" />
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 400px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #FFD93D, #FF6B6B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .status {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid #22c55e;
+        }
+        
+        .button {
+            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+        }
+        
+        .log {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Base Daily Tasks</h1>
+        <p>Simple Test Page</p>
+        
+        <div class="status">
+            <div id="status">🔄 Initializing...</div>
+        </div>
+        
+        <button class="button" onclick="testReady()">🧪 Test Ready Signal</button>
+        <button class="button" onclick="openMainApp()">🚀 Open Main App</button>
+        
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        // Enhanced logging
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+        
+        // Global ready flags
+        window._ready = true;
+        window._miniappReady = true;
+        window._sdkReady = true;
+        
+        // Ultra-simple SDK
+        window.sdk = {
+            actions: {
+                ready: function() {
+                    log('🚀 SDK ready() called');
+                    
+                    try {
+                        // Send all possible ready signals
+                        if (window.parent && window.parent !== window) {
+                            window.parent.postMessage({ type: 'sdk_ready', ready: true }, '*');
+                            window.parent.postMessage({ type: 'ready' }, '*');
+                            window.parent.postMessage('ready', '*');
+                            window.parent.postMessage('miniapp_ready', '*');
+                            log('✅ Ready messages sent to parent');
+                        } else {
+                            log('⚠️ No parent window found');
+                        }
+                        
+                        // Update status
+                        document.getElementById('status').innerHTML = '✅ SDK Ready!';
+                        
+                    } catch (e) {
+                        log('❌ Ready signal error: ' + e.message);
+                    }
+                    
+                    return Promise.resolve();
+                }
+            }
+        };
+        
+        // Test function
+        function testReady() {
+            log('🧪 Manual ready test triggered');
+            window.sdk.actions.ready();
+        }
+        
+        function openMainApp() {
+            log('🚀 Opening main app');
+            window.open('https://baseaapp.vercel.app', '_blank');
+        }
+        
+        // Auto-initialize
+        function initialize() {
+            log('🎯 Simple test page initialized');
+            log('🌐 User Agent: ' + navigator.userAgent);
+            log('📱 Is Mobile: ' + /Mobile|Android|iPhone|iPad/.test(navigator.userAgent));
+            log('🖼️ Is Frame: ' + (window.parent !== window));
+            
+            // Send ready immediately
+            window.sdk.actions.ready();
+            
+            // Send ready periodically
+            setTimeout(() => window.sdk.actions.ready(), 100);
+            setTimeout(() => window.sdk.actions.ready(), 500);
+            setTimeout(() => window.sdk.actions.ready(), 1000);
+            setTimeout(() => window.sdk.actions.ready(), 2000);
+        }
+        
+        // Message listener
+        window.addEventListener('message', function(e) {
+            log('📨 Received: ' + JSON.stringify(e.data));
+            
+            if (e.data === 'ping' || 
+                e.data === 'ready?' || 
+                (e.data && e.data.type === 'request_ready')) {
+                log('🔄 Responding to ready request');
+                window.sdk.actions.ready();
+            }
+        });
+        
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initialize);
+        } else {
+            initialize();
+        }
+        
+        // Also initialize on window load
+        window.addEventListener('load', initialize);
+    </script>
+</body>
+</html>

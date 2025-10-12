@@ -2,71 +2,258 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Base Daily Tasks - Clean Test</title>
+    <title>Base Daily Tasks - Enhanced Ready Test</title>
     <meta name="fc:frame" content="vNext" />
     <meta name="fc:frame:image" content="https://baseaapp.vercel.app/baseikon.png" />
-    <meta name="fc:frame:button:1" content="🎯 Open App" />
+    <meta name="fc:frame:button:1" content="🎯 Test Ready" />
     <meta name="fc:frame:button:1:action" content="link" />
-    <meta name="fc:frame:button:1:target" content="https://baseaapp.vercel.app" />
-    <meta property="og:title" content="Base Daily Tasks" />
-    <meta property="og:description" content="Complete daily tasks and earn rewards" />
+    <meta name="fc:frame:button:1:target" content="https://baseaapp.vercel.app/clean.html" />
+    <meta property="og:title" content="Base Daily Tasks - Ready Test" />
+    <meta property="og:description" content="Enhanced ready signal test for Farcaster" />
     <meta property="og:image" content="https://baseaapp.vercel.app/baseikon.png" />
 </head>
 <body style="margin:0;padding:20px;font-family:Arial;background:linear-gradient(135deg,#667eea,#764ba2);color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;">
-    <div style="text-align:center;max-width:500px;">
-        <h1 style="font-size:2.5rem;margin-bottom:20px;">🎯 Base Daily Tasks</h1>
-        <p style="font-size:1.2rem;margin-bottom:30px;">Farcaster Mini App - Clean Test</p>
+    <div style="text-align:center;max-width:600px;width:100%;">
+        <h1 style="font-size:2.5rem;margin-bottom:20px;">🔧 Enhanced Ready Test</h1>
+        <p style="font-size:1.2rem;margin-bottom:30px;">Farcaster SDK Ready Signal Test</p>
+        
         <div style="background:rgba(255,255,255,0.1);padding:20px;border-radius:12px;margin-bottom:20px;">
-            <p>✅ No Next.js</p>
-            <p>✅ No External APIs</p>
-            <p>✅ No CSP Issues</p>
-            <p>✅ Pure HTML + JS</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;text-align:left;">
+                <div>✅ Enhanced SDK</div>
+                <div>✅ Multiple Signals</div>
+                <div>✅ Auto Retry</div>
+                <div>✅ Debug Logs</div>
+            </div>
         </div>
-        <button onclick="testReady()" style="background:#22c55e;color:white;border:none;padding:12px 24px;border-radius:8px;font-size:1rem;cursor:pointer;margin:10px;">🚀 Test Ready</button>
-        <div id="result" style="margin-top:20px;padding:15px;background:rgba(0,0,0,0.2);border-radius:8px;display:none;"></div>
+        
+        <div style="margin-bottom:20px;">
+            <button onclick="testReady()" style="background:#22c55e;color:white;border:none;padding:12px 24px;border-radius:8px;font-size:1rem;cursor:pointer;margin:5px;">🚀 Test Ready</button>
+            <button onclick="testMultiple()" style="background:#8b5cf6;color:white;border:none;padding:12px 24px;border-radius:8px;font-size:1rem;cursor:pointer;margin:5px;">🔄 Multiple</button>
+            <button onclick="clearResult()" style="background:#ef4444;color:white;border:none;padding:12px 24px;border-radius:8px;font-size:1rem;cursor:pointer;margin:5px;">🗑️ Clear</button>
+        </div>
+        
+        <div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:8px;margin-bottom:20px;">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;font-size:0.9rem;">
+                <div>Environment: <strong id="env">...</strong></div>
+                <div>SDK Status: <strong id="sdk-status">...</strong></div>
+                <div>Ready Count: <strong id="ready-count">0</strong></div>
+                <div>Auto Calls: <strong id="auto-count">0</strong></div>
+            </div>
+        </div>
+        
+        <div id="result" style="background:rgba(0,0,0,0.2);border-radius:8px;padding:15px;font-family:monospace;font-size:0.85rem;text-align:left;max-height:300px;overflow-y:auto;display:none;"></div>
     </div>
 
     <script>
-        // Minimal SDK
+        let readyCount = 0;
+        let autoCount = 0;
+        const result = document.getElementById('result');
+        
+        function addLog(message, type = 'info') {
+            const time = new Date().toLocaleTimeString();
+            const colors = {
+                success: '#22c55e',
+                error: '#ef4444',
+                info: '#3b82f6',
+                warning: '#f59e0b'
+            };
+            
+            const div = document.createElement('div');
+            div.style.color = colors[type] || '#ffffff';
+            div.style.marginBottom = '3px';
+            div.innerHTML = `[${time}] ${message}`;
+            
+            result.appendChild(div);
+            result.scrollTop = result.scrollHeight;
+            result.style.display = 'block';
+        }
+        
+        function clearResult() {
+            result.innerHTML = '';
+            result.style.display = 'none';
+            readyCount = 0;
+            autoCount = 0;
+            updateCounters();
+        }
+        
+        function updateCounters() {
+            document.getElementById('ready-count').textContent = readyCount;
+            document.getElementById('auto-count').textContent = autoCount;
+        }
+        
+        // Environment detection
+        const isInIframe = window.self !== window.top;
+        const isFarcaster = isInIframe && (
+            document.referrer.includes('farcaster') || 
+            document.referrer.includes('warpcast') ||
+            window.location.search.includes('farcaster')
+        );
+        
+        document.getElementById('env').textContent = isInIframe ? (isFarcaster ? 'Farcaster' : 'Iframe') : 'Direct';
+        
+        // Enhanced SDK with comprehensive ready signals
         window.sdk = {
             actions: {
                 ready: function() {
-                    if (window.parent !== window) {
-                        window.parent.postMessage({ type: 'sdk_ready', ready: true }, '*');
-                        window.parent.postMessage('ready', '*');
+                    readyCount++;
+                    updateCounters();
+                    addLog('🚀 sdk.actions.ready() called', 'info');
+                    
+                    try {
+                        if (isInIframe && window.parent) {
+                            // Comprehensive message set for maximum compatibility
+                            const messages = [
+                                'ready',
+                                { type: 'ready' },
+                                { type: 'sdk_ready', ready: true },
+                                { type: 'miniapp_ready' },
+                                { type: 'frame_ready' },
+                                { type: 'fc_ready' },
+                                { action: 'ready', status: 'success' },
+                                { event: 'ready', timestamp: Date.now() },
+                                { ready: true, source: 'enhanced-sdk' }
+                            ];
+                            
+                            let sentCount = 0;
+                            messages.forEach((msg, index) => {
+                                try {
+                                    window.parent.postMessage(msg, '*');
+                                    sentCount++;
+                                } catch (e) {
+                                    addLog(`❌ Message ${index + 1} failed: ${e.message}`, 'error');
+                                }
+                            });
+                            
+                            addLog(`✅ Sent ${sentCount}/${messages.length} messages to parent`, 'success');
+                        } else {
+                            addLog('ℹ️ Not in iframe - ready called locally', 'info');
+                        }
+                        
+                        // Dispatch custom events
+                        const events = ['sdk_ready', 'miniapp_ready', 'frame_ready', 'fc_ready'];
+                        events.forEach(eventName => {
+                            try {
+                                window.dispatchEvent(new CustomEvent(eventName, { 
+                                    detail: { timestamp: Date.now() }
+                                }));
+                            } catch (e) {
+                                addLog(`❌ Event ${eventName} failed: ${e.message}`, 'error');
+                            }
+                        });
+                        
+                        addLog('📡 Custom events dispatched', 'success');
+                        
+                        // Set global flags
+                        window._ready = true;
+                        window._miniappReady = true;
+                        window._sdkReady = true;
+                        
+                        return Promise.resolve();
+                    } catch (error) {
+                        addLog(`❌ Ready error: ${error.message}`, 'error');
+                        return Promise.reject(error);
                     }
-                    return Promise.resolve();
                 }
             }
         };
         
-        window._ready = true;
+        // Check SDK status
+        document.getElementById('sdk-status').textContent = 
+            (window.sdk && window.sdk.actions && window.sdk.actions.ready) ? '✅ OK' : '❌ Error';
         
-        // Auto ready
-        if (window.sdk.actions.ready) {
-            window.sdk.actions.ready();
-            setTimeout(() => window.sdk.actions.ready(), 100);
-            setTimeout(() => window.sdk.actions.ready(), 500);
+        // Auto-ready sequence with multiple timings
+        function autoReadySequence() {
+            addLog('🔄 Auto-ready sequence starting...', 'info');
+            
+            const delays = [0, 10, 50, 100, 250, 500, 1000, 2000];
+            delays.forEach((delay, index) => {
+                setTimeout(() => {
+                    try {
+                        window.sdk.actions.ready();
+                        autoCount++;
+                        updateCounters();
+                        addLog(`✅ Auto-ready ${index + 1}/${delays.length} (${delay}ms)`, 'success');
+                    } catch (e) {
+                        addLog(`❌ Auto-ready ${index + 1} failed: ${e.message}`, 'error');
+                    }
+                }, delay);
+            });
         }
         
-        // Test function
-        function testReady() {
-            try {
-                window.sdk.actions.ready();
-                document.getElementById('result').style.display = 'block';
-                document.getElementById('result').innerHTML = '✅ Ready signal sent!<br>Time: ' + new Date().toLocaleTimeString();
-            } catch (e) {
-                document.getElementById('result').style.display = 'block';
-                document.getElementById('result').innerHTML = '❌ Error: ' + e.message;
+        // Message listener with enhanced filtering
+        window.addEventListener('message', function(event) {
+            // Filter out wallet extension noise
+            if (event.data && typeof event.data === 'object' && event.data.target) {
+                const target = event.data.target.toLowerCase();
+                if (target.includes('metamask') || target.includes('wallet') || target.includes('extension')) {
+                    return; // Skip wallet messages
+                }
             }
-        }
-        
-        // Listen for ping
-        window.addEventListener('message', function(e) {
-            if (e.data === 'ping' || (e.data && e.data.type === 'request_ready')) {
+            
+            addLog(`📨 Message: ${JSON.stringify(event.data)} from ${event.origin}`, 'info');
+            
+            const triggers = ['ping', 'ready?', 'request_ready', 'init', 'hello'];
+            const data = typeof event.data === 'string' ? event.data : event.data?.type;
+            
+            if (triggers.includes(data)) {
+                addLog('🔄 Responding to ready request...', 'warning');
                 window.sdk.actions.ready();
             }
         });
+        
+        // Manual test functions
+        function testReady() {
+            addLog('🧪 Manual ready test started', 'info');
+            try {
+                window.sdk.actions.ready();
+                addLog('✅ Manual ready test completed', 'success');
+            } catch (e) {
+                addLog(`❌ Manual ready test failed: ${e.message}`, 'error');
+            }
+        }
+        
+        function testMultiple() {
+            addLog('🧪 Multiple ready test started (5x)', 'info');
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    try {
+                        window.sdk.actions.ready();
+                        addLog(`✅ Multiple test ${i + 1}/5 completed`, 'success');
+                    } catch (e) {
+                        addLog(`❌ Multiple test ${i + 1}/5 failed: ${e.message}`, 'error');
+                    }
+                }, i * 150);
+            }
+        }
+        
+        // Initialize
+        addLog('🎯 Enhanced SDK Test Page Initialized', 'success');
+        addLog(`🔍 Environment: ${document.getElementById('env').textContent}`, 'info');
+        addLog(`🔧 SDK Status: ${document.getElementById('sdk-status').textContent}`, 'info');
+        addLog(`📱 User Agent: ${navigator.userAgent.substring(0, 50)}...`, 'info');
+        addLog(`📍 Referrer: ${document.referrer || 'None'}`, 'info');
+        
+        // Start auto-ready sequence after a short delay
+        setTimeout(autoReadySequence, 200);
+        
+        // Additional ready calls on page events
+        document.addEventListener('DOMContentLoaded', function() {
+            addLog('📄 DOMContentLoaded - calling ready', 'info');
+            window.sdk.actions.ready();
+        });
+        
+        window.addEventListener('load', function() {
+            addLog('🌐 Window load - calling ready', 'info');
+            window.sdk.actions.ready();
+        });
+        
+        // Focus/blur events for iframe
+        if (isInIframe) {
+            window.addEventListener('focus', function() {
+                addLog('👁️ Window focus - calling ready', 'info');
+                window.sdk.actions.ready();
+            });
+        }
     </script>
 </body>
 </html>
