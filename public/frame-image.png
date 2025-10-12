@@ -1,2 +1,4 @@
-<!-- Bu bir placeholder, gerçek PNG dosyası olmalı -->
-<!-- Frame image için 1200x630 boyutunda bir görsel gerekli -->
+<svg width="192" height="192" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" fill="#0052ff"/>
+  <text x="96" y="110" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="white">BT</text>
+</svg>
