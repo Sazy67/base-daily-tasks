@@ -53,151 +53,151 @@ export default function RootLayout({
         <meta property="og:image" content="https://baseaapp-q52c8mohm-suat-ayazs-projects-64e3ae06.vercel.app/icon.svg" />
         <meta property="og:url" content="https://baseaapp-q52c8mohm-suat-ayazs-projects-64e3ae06.vercel.app" />
         
-        {/* Base Mini App SDK - Optimized Pattern */}
+        {/* Farcaster Mini App SDK - Fixed Implementation */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              // Base Mini App SDK - Optimized Implementation
+              // Farcaster Mini App SDK - Ready Signal Fix
               (function() {
-                let sdkInitialized = false;
+                console.log('🟣 Farcaster SDK initializing...');
                 
-                function initializeSDK() {
-                  if (sdkInitialized) return;
-                  sdkInitialized = true;
-                  
-                  // Create the SDK structure Base expects
-                  window.sdk = {
-                    actions: {
-                      ready() {
-                        try {
-                          const isInIframe = window.parent !== window || window.top !== window;
+                // Create SDK structure immediately
+                window.sdk = {
+                  actions: {
+                    ready() {
+                      console.log('📡 SDK ready() called');
+                      try {
+                        // Send ready signal to parent
+                        if (window.parent && window.parent !== window) {
+                          console.log('📤 Sending ready to parent...');
                           
-                          if (isInIframe) {
-                            // We're in an iframe, send ready messages
-                            const targets = [window.parent, window.top].filter(w => w && w !== window);
-                            
-                            targets.forEach(target => {
-                              try {
-                                // Base's expected formats
-                                target.postMessage({
-                                  type: 'miniapp_ready',
-                                  source: 'miniapp',
-                                  ready: true,
-                                  timestamp: Date.now()
-                                }, '*');
-                                
-                                target.postMessage('ready', '*');
-                                target.postMessage({ type: 'ready' }, '*');
-                                target.postMessage({ ready: true }, '*');
-                                
-                                // Farcaster Mini App formats
-                                target.postMessage({
-                                  type: 'frame_ready',
-                                  ready: true
-                                }, '*');
-                                
-                                target.postMessage({
-                                  type: 'fc_ready'
-                                }, '*');
-                                
-                                target.postMessage({
-                                  type: 'miniapp_ready',
-                                  ready: true,
-                                  source: 'farcaster_miniapp'
-                                }, '*');
-                              } catch (e) {
-                                // Silent error handling
-                              }
-                            });
-                          }
+                          // Multiple ready formats for compatibility
+                          const readyMessages = [
+                            { type: 'sdk_ready', ready: true, timestamp: Date.now() },
+                            { type: 'miniapp_ready', ready: true, source: 'farcaster' },
+                            { type: 'frame_ready', ready: true },
+                            { type: 'ready', ready: true },
+                            'ready'
+                          ];
                           
-                          return Promise.resolve();
-                        } catch (e) {
-                          return Promise.resolve();
+                          readyMessages.forEach(msg => {
+                            try {
+                              window.parent.postMessage(msg, '*');
+                            } catch (e) {
+                              console.log('Message send error:', e);
+                            }
+                          });
                         }
-                      },
-                      
-                      share(data) {
-                        return navigator.share ? navigator.share(data) : Promise.resolve();
-                      },
-                      
-                      close() {
-                        try {
-                          if (window.parent !== window) {
-                            window.parent.postMessage({ type: 'close' }, '*');
-                          }
-                        } catch (e) {
-                          // Silent
+                        
+                        return Promise.resolve({ success: true });
+                      } catch (error) {
+                        console.error('Ready error:', error);
+                        return Promise.resolve({ success: false, error });
+                      }
+                    },
+                    
+                    share(data) {
+                      console.log('📤 Share called:', data);
+                      return navigator.share ? navigator.share(data) : Promise.resolve();
+                    },
+                    
+                    close() {
+                      console.log('❌ Close called');
+                      try {
+                        if (window.parent !== window) {
+                          window.parent.postMessage({ type: 'close' }, '*');
                         }
-                      },
-                      
-                      openUrl(url) {
-                        try {
-                          window.open(url, '_blank');
-                        } catch (e) {
-                          // Silent
-                        }
+                      } catch (e) {
+                        console.log('Close error:', e);
+                      }
+                    },
+                    
+                    openUrl(url) {
+                      console.log('🔗 OpenUrl called:', url);
+                      try {
+                        window.open(url, '_blank');
+                      } catch (e) {
+                        console.log('OpenUrl error:', e);
                       }
                     }
-                  };
-                  
-                  // Set ready flags
-                  window._ready = true;
-                  window._baseReady = true;
-                  window._miniappReady = true;
+                  }
+                };
+                
+                // Set global ready flags
+                window._ready = true;
+                window._farcasterReady = true;
+                window._miniappReady = true;
+                
+                // Initialize function
+                function initialize() {
+                  console.log('🚀 SDK initialize called');
                   
                   // Call ready immediately
-                  window.sdk.actions.ready();
+                  if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
+                    window.sdk.actions.ready();
+                  }
                   
-                  // Call ready with delays
-                  setTimeout(() => window.sdk.actions.ready(), 100);
-                  setTimeout(() => window.sdk.actions.ready(), 500);
-                  setTimeout(() => window.sdk.actions.ready(), 1000);
+                  // Call ready with delays for safety
+                  setTimeout(() => {
+                    if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
+                      window.sdk.actions.ready();
+                    }
+                  }, 100);
+                  
+                  setTimeout(() => {
+                    if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
+                      window.sdk.actions.ready();
+                    }
+                  }, 500);
                 }
                 
-                // Initialize immediately if possible
-                if (document.readyState !== 'loading') {
-                  initializeSDK();
-                } else {
-                  document.addEventListener('DOMContentLoaded', initializeSDK);
-                }
-                
-                // Also listen for load event as backup
-                window.addEventListener('load', initializeSDK);
-                
-                // Listen for Base app requests
+                // Listen for parent requests
                 window.addEventListener('message', function(event) {
+                  console.log('📨 Message received:', event.data);
+                  
                   try {
                     if (event.data && (
                       event.data.type === 'request_ready' ||
                       event.data.type === 'ping' ||
-                      event.data.type === 'base_ping' ||
                       event.data === 'ping' ||
                       event.data === 'ready?'
                     )) {
+                      console.log('🔄 Ready request received, responding...');
                       if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
                         setTimeout(() => window.sdk.actions.ready(), 10);
                       }
                     }
                   } catch (e) {
-                    // Silent
+                    console.log('Message handler error:', e);
                   }
                 });
+                
+                // Initialize based on document state
+                if (document.readyState === 'loading') {
+                  document.addEventListener('DOMContentLoaded', initialize);
+                } else {
+                  initialize();
+                }
+                
+                // Also initialize on window load
+                window.addEventListener('load', initialize);
                 
                 // Periodic ready signaling for first 30 seconds
                 let readyCount = 0;
                 const readyInterval = setInterval(() => {
-                  try {
-                    if (window.sdk && window.sdk.actions && window.sdk.actions.ready && readyCount < 15) {
+                  if (readyCount < 30) {
+                    console.log('⏰ Periodic ready signal:', readyCount);
+                    if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
                       window.sdk.actions.ready();
-                      readyCount++;
-                    } else {
-                      clearInterval(readyInterval);
                     }
-                  } catch (e) {
+                    readyCount++;
+                  } else {
                     clearInterval(readyInterval);
+                    console.log('✅ Periodic ready signals completed');
                   }
-                }, 2000);
+                }, 1000);
+                
+                console.log('✅ Farcaster SDK setup complete');
               })();
             `,
           }}
