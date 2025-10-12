@@ -8,6 +8,10 @@ const nextConfig = {
   async rewrites() {
     return [
       {
+        source: '/fc',
+        destination: '/farcaster-wallet.html'
+      },
+      {
         source: '/working',
         destination: '/working.html'
       },

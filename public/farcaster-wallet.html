@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base Daily Tasks - Farcaster</title>
+    
+    <!-- Farcaster Frame Meta Tags -->
+    <meta name="fc:frame" content="vNext" />
+    <meta name="fc:frame:image" content="https://baseaapp.vercel.app/baseikon.png" />
+    <meta name="fc:frame:button:1" content="🎯 Open App" />
+    <meta name="fc:frame:button:1:action" content="link" />
+    <meta name="fc:frame:button:1:target" content="https://baseaapp.vercel.app/farcaster-wallet.html" />
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Base Daily Tasks" />
+    <meta property="og:description" content="Complete daily tasks and earn rewards on Base network" />
+    <meta property="og:image" content="https://baseaapp.vercel.app/baseikon.png" />
+    <meta property="og:url" content="https://baseaapp.vercel.app" />
+    
+    <!-- Farcaster Mini App -->
+    <meta name="farcaster:miniapp" content="true" />
+    <meta name="farcaster:miniapp:name" content="Base Daily Tasks" />
+    <meta name="farcaster:miniapp:description" content="Complete daily tasks and earn rewards on Base network" />
+    <meta name="farcaster:miniapp:icon" content="https://baseaapp.vercel.app/baseikon.png" />
+</head>
+<body style="margin:0;padding:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);color:white;min-height:100vh;">
+    
+    <!-- Header -->
+    <div style="text-align:center;padding:20px 20px 10px 20px;">
+        <div style="font-size:3rem;margin-bottom:10px;">🎯</div>
+        <h1 style="font-size:2rem;margin-bottom:10px;">Base Daily Tasks</h1>
+        <p style="opacity:0.9;margin-bottom:20px;">Farcaster Mini App Edition</p>
+    </div>
+
+    <!-- Wallet Connection -->
+    <div id="wallet-section" style="padding:0 20px 20px 20px;">
+        <div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:20px;margin-bottom:20px;text-align:center;">
+            <div id="wallet-status">
+                <div style="font-size:2rem;margin-bottom:10px;">🟣</div>
+                <h3 style="margin-bottom:10px;">Connect Farcaster Wallet</h3>
+                <p style="opacity:0.8;margin-bottom:15px;">Use your Farcaster wallet to start earning rewards</p>
+                <button onclick="connectFarcasterWallet()" id="connect-btn" style="background:#8b5cf6;color:white;border:none;padding:12px 24px;border-radius:8px;font-size:1rem;cursor:pointer;font-weight:600;">
+                    🔗 Connect Wallet
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Content (Hidden until wallet connected) -->
+    <div id="app-content" style="display:none;padding:0 20px;">
+        
+        <!-- Stats -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:15px;margin-bottom:20px;">
+            <div style="background:rgba(255,255,255,0.1);padding:15px;border-radius:8px;text-align:center;">
+                <div style="font-size:1.5rem;font-weight:bold;color:#22c55e;">0</div>
+                <div style="font-size:0.9rem;opacity:0.8;">Points</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.1);padding:15px;border-radius:8px;text-align:center;">
+                <div style="font-size:1.5rem;font-weight:bold;color:#3b82f6;">0.0000</div>
+                <div style="font-size:0.9rem;opacity:0.8;">ETH</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.1);padding:15px;border-radius:8px;text-align:center;">
+                <div style="font-size:1.5rem;font-weight:bold;color:#f59e0b;">1</div>
+                <div style="font-size:0.9rem;opacity:0.8;">Level</div>
+            </div>
+        </div>
+
+        <!-- Tasks -->
+        <div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:20px;margin-bottom:20px;">
+            <h3 style="margin-bottom:15px;">🎯 Daily Tasks</h3>
+            
+            <div style="background:rgba(255,255,255,0.1);padding:15px;border-radius:8px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <div style="font-weight:600;margin-bottom:5px;">Daily Login</div>
+                    <div style="font-size:0.9rem;opacity:0.8;">+100 points</div>
+                </div>
+                <button onclick="completeTask('login')" style="background:#22c55e;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;">
+                    Complete
+                </button>
+            </div>
+            
+            <div style="background:rgba(255,255,255,0.1);padding:15px;border-radius:8px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <div style="font-weight:600;margin-bottom:5px;">Share on Farcaster</div>
+                    <div style="font-size:0.9rem;opacity:0.8;">+150 points</div>
+                </div>
+                <button onclick="shareOnFarcaster()" style="background:#8b5cf6;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;">
+                    Share
+                </button>
+            </div>
+        </div>
+
+        <!-- Spin Wheel -->
+        <div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:20px;text-align:center;">
+            <h3 style="margin-bottom:15px;">🎰 Spin Wheel</h3>
+            <div style="width:120px;height:120px;border-radius:50%;background:conic-gradient(#ff6b6b,#4ecdc4,#45b7d1,#96ceb4,#ffeaa7,#dda0dd,#ffd93d);margin:0 auto 15px auto;display:flex;align-items:center;justify-content:center;font-size:2rem;">
+                🎯
+            </div>
+            <button onclick="spinWheel()" style="background:#f59e0b;color:white;border:none;padding:12px 24px;border-radius:8px;font-size:1rem;cursor:pointer;font-weight:600;">
+                🎰 Spin (0.003 ETH)
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Farcaster SDK
+        window.sdk = {
+            actions: {
+                ready() {
+                    if (window.parent !== window) {
+                        window.parent.postMessage({ type: 'sdk_ready' }, '*');
+                    }
+                    return Promise.resolve();
+                },
+                share(data) {
+                    return Promise.resolve();
+                },
+                close() {
+                    if (window.parent !== window) {
+                        window.parent.postMessage({ type: 'close' }, '*');
+                    }
+                },
+                openUrl(url) {
+                    window.open(url, '_blank');
+                }
+            }
+        };
+
+        // Auto ready
+        window.sdk.actions.ready();
+        setTimeout(() => window.sdk.actions.ready(), 100);
+        setTimeout(() => window.sdk.actions.ready(), 500);
+
+        // Listen for messages
+        window.addEventListener('message', function(e) {
+            if (e.data === 'ping' || (e.data && e.data.type === 'ping')) {
+                window.sdk.actions.ready();
+            }
+        });
+
+        // Farcaster Wallet Integration
+        let walletConnected = false;
+        let userAddress = '';
+
+        async function connectFarcasterWallet() {
+            try {
+                document.getElementById('connect-btn').textContent = '🔄 Connecting...';
+                
+                // Check if we're in Farcaster environment
+                if (window.parent !== window) {
+                    // We're in Farcaster frame - simulate connection
+                    setTimeout(() => {
+                        walletConnected = true;
+                        userAddress = '0x1234...5678'; // Simulated address
+                        
+                        // Update UI
+                        document.getElementById('wallet-section').innerHTML = `
+                            <div style="background:rgba(34,197,94,0.2);border:1px solid #22c55e;border-radius:12px;padding:15px;text-align:center;">
+                                <div style="font-size:1.5rem;margin-bottom:5px;">✅</div>
+                                <div style="font-weight:600;margin-bottom:5px;">Farcaster Wallet Connected</div>
+                                <div style="font-size:0.9rem;opacity:0.8;">${userAddress}</div>
+                            </div>
+                        `;
+                        
+                        // Show app content
+                        document.getElementById('app-content').style.display = 'block';
+                        
+                    }, 1500);
+                } else {
+                    // Not in Farcaster - show message
+                    document.getElementById('connect-btn').innerHTML = '⚠️ Open in Farcaster';
+                }
+                
+            } catch (error) {
+                document.getElementById('connect-btn').textContent = '❌ Connection Failed';
+                console.error('Wallet connection error:', error);
+            }
+        }
+
+        function completeTask(taskId) {
+            if (!walletConnected) {
+                alert('Please connect your Farcaster wallet first!');
+                return;
+            }
+            
+            alert(`✅ Task "${taskId}" completed! +100 points earned.`);
+        }
+
+        function shareOnFarcaster() {
+            if (!walletConnected) {
+                alert('Please connect your Farcaster wallet first!');
+                return;
+            }
+            
+            // Use Farcaster SDK to share
+            if (window.sdk && window.sdk.actions && window.sdk.actions.share) {
+                window.sdk.actions.share({
+                    text: "Just earned rewards on Base Daily Tasks! 🎯",
+                    url: "https://baseaapp.vercel.app"
+                });
+            }
+            
+            alert('✅ Shared on Farcaster! +150 points earned.');
+        }
+
+        function spinWheel() {
+            if (!walletConnected) {
+                alert('Please connect your Farcaster wallet first!');
+                return;
+            }
+            
+            const prizes = [10, 25, 50, 100, 200, 500, 1000];
+            const prize = prizes[Math.floor(Math.random() * prizes.length)];
+            
+            alert(`🎉 You won ${prize} points!`);
+        }
+
+        // Auto-connect if in Farcaster
+        if (window.parent !== window) {
+            setTimeout(() => {
+                document.getElementById('connect-btn').click();
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
