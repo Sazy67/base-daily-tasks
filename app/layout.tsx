@@ -53,58 +53,33 @@ export default function RootLayout({
         <meta property="og:image" content="https://baseaapp.vercel.app/og-image.png" />
         <meta property="og:url" content="https://baseaapp.vercel.app" />
 
-        {/* Farcaster Mini App SDK - Enhanced Ready Signals */}
+        {/* Farcaster Mini App SDK - Ultra Simple */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              // Farcaster SDK - Enhanced Implementation
+              // Ultra Simple Farcaster SDK
               (function() {
-                console.log('🟣 Farcaster SDK initializing...');
-                
-                // Create SDK immediately
+                // Create minimal SDK
                 window.sdk = {
                   actions: {
                     ready: function() {
-                      console.log('📡 SDK ready() called');
                       try {
                         if (window.parent !== window) {
-                          console.log('📤 Sending ready signals to parent...');
-                          
-                          // Send multiple ready formats
-                          const messages = [
-                            { type: 'sdk_ready', ready: true, timestamp: Date.now() },
-                            { type: 'miniapp_ready', ready: true },
-                            { type: 'frame_ready', ready: true },
-                            { ready: true },
-                            'ready'
-                          ];
-                          
-                          messages.forEach(msg => {
-                            try {
-                              window.parent.postMessage(msg, '*');
-                            } catch (e) {
-                              console.log('Message send error:', e);
-                            }
-                          });
+                          window.parent.postMessage({ type: 'sdk_ready', ready: true }, '*');
+                          window.parent.postMessage('ready', '*');
                         }
-                        return Promise.resolve({ success: true });
+                        return Promise.resolve();
                       } catch (e) {
-                        console.error('Ready error:', e);
-                        return Promise.resolve({ success: false, error: e });
+                        return Promise.resolve();
                       }
                     },
-                    share: function(data) { 
-                      console.log('📤 Share called:', data);
-                      return Promise.resolve(); 
-                    },
+                    share: function() { return Promise.resolve(); },
                     close: function() { 
-                      console.log('❌ Close called');
                       try { 
                         if (window.parent !== window) window.parent.postMessage({ type: 'close' }, '*'); 
                       } catch (e) {} 
                     },
                     openUrl: function(url) { 
-                      console.log('🔗 OpenUrl called:', url);
                       try { 
                         window.open(url, '_blank'); 
                       } catch (e) {} 
@@ -112,60 +87,36 @@ export default function RootLayout({
                   }
                 };
                 
-                // Set ready flags
+                // Set flags
                 window._ready = true;
                 window._miniappReady = true;
-                window._farcasterReady = true;
                 
-                // Enhanced ready function
-                function callReady() {
-                  console.log('🚀 Calling ready...');
+                // Simple ready function
+                function ready() {
                   if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
                     window.sdk.actions.ready();
                   }
                 }
                 
-                // Aggressive ready calling
-                callReady();
-                setTimeout(callReady, 50);
-                setTimeout(callReady, 100);
-                setTimeout(callReady, 250);
-                setTimeout(callReady, 500);
-                setTimeout(callReady, 1000);
-                setTimeout(callReady, 2000);
+                // Call ready immediately and with delays
+                ready();
+                setTimeout(ready, 100);
+                setTimeout(ready, 500);
+                setTimeout(ready, 1000);
                 
-                // Listen for parent requests
+                // Listen for ping
                 window.addEventListener('message', function(e) {
-                  console.log('📨 Message received:', e.data);
-                  if (e.data === 'ping' || 
-                      (e.data && (e.data.type === 'request_ready' || e.data.type === 'ping'))) {
-                    console.log('🔄 Ready request received, responding...');
-                    callReady();
+                  if (e.data === 'ping' || (e.data && e.data.type === 'request_ready')) {
+                    ready();
                   }
                 });
                 
-                // Call ready on all load events
-                if (document.readyState === 'loading') {
-                  document.addEventListener('DOMContentLoaded', callReady);
+                // Ready on load
+                if (document.readyState !== 'loading') {
+                  ready();
                 } else {
-                  callReady();
+                  document.addEventListener('DOMContentLoaded', ready);
                 }
-                window.addEventListener('load', callReady);
-                
-                // Periodic ready signals for 30 seconds
-                let readyCount = 0;
-                const readyInterval = setInterval(() => {
-                  if (readyCount < 15) {
-                    console.log('⏰ Periodic ready signal:', readyCount);
-                    callReady();
-                    readyCount++;
-                  } else {
-                    clearInterval(readyInterval);
-                    console.log('✅ Periodic ready signals completed');
-                  }
-                }, 2000);
-                
-                console.log('✅ Farcaster SDK setup complete');
               })();
             `,
           }}
