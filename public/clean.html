@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Base Daily Tasks - Clean Test</title>
+    <meta name="fc:frame" content="vNext" />
+    <meta name="fc:frame:image" content="https://baseaapp.vercel.app/baseikon.png" />
+    <meta name="fc:frame:button:1" content="🎯 Open App" />
+    <meta name="fc:frame:button:1:action" content="link" />
+    <meta name="fc:frame:button:1:target" content="https://baseaapp.vercel.app" />
+    <meta property="og:title" content="Base Daily Tasks" />
+    <meta property="og:description" content="Complete daily tasks and earn rewards" />
+    <meta property="og:image" content="https://baseaapp.vercel.app/baseikon.png" />
+</head>
+<body style="margin:0;padding:20px;font-family:Arial;background:linear-gradient(135deg,#667eea,#764ba2);color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;">
+    <div style="text-align:center;max-width:500px;">
+        <h1 style="font-size:2.5rem;margin-bottom:20px;">🎯 Base Daily Tasks</h1>
+        <p style="font-size:1.2rem;margin-bottom:30px;">Farcaster Mini App - Clean Test</p>
+        <div style="background:rgba(255,255,255,0.1);padding:20px;border-radius:12px;margin-bottom:20px;">
+            <p>✅ No Next.js</p>
+            <p>✅ No External APIs</p>
+            <p>✅ No CSP Issues</p>
+            <p>✅ Pure HTML + JS</p>
+        </div>
+        <button onclick="testReady()" style="background:#22c55e;color:white;border:none;padding:12px 24px;border-radius:8px;font-size:1rem;cursor:pointer;margin:10px;">🚀 Test Ready</button>
+        <div id="result" style="margin-top:20px;padding:15px;background:rgba(0,0,0,0.2);border-radius:8px;display:none;"></div>
+    </div>
+
+    <script>
+        // Minimal SDK
+        window.sdk = {
+            actions: {
+                ready: function() {
+                    if (window.parent !== window) {
+                        window.parent.postMessage({ type: 'sdk_ready', ready: true }, '*');
+                        window.parent.postMessage('ready', '*');
+                    }
+                    return Promise.resolve();
+                }
+            }
+        };
+        
+        window._ready = true;
+        
+        // Auto ready
+        if (window.sdk.actions.ready) {
+            window.sdk.actions.ready();
+            setTimeout(() => window.sdk.actions.ready(), 100);
+            setTimeout(() => window.sdk.actions.ready(), 500);
+        }
+        
+        // Test function
+        function testReady() {
+            try {
+                window.sdk.actions.ready();
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('result').innerHTML = '✅ Ready signal sent!<br>Time: ' + new Date().toLocaleTimeString();
+            } catch (e) {
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('result').innerHTML = '❌ Error: ' + e.message;
+            }
+        }
+        
+        // Listen for ping
+        window.addEventListener('message', function(e) {
+            if (e.data === 'ping' || (e.data && e.data.type === 'request_ready')) {
+                window.sdk.actions.ready();
+            }
+        });
+    </script>
+</body>
+</html>
