@@ -29,6 +29,6 @@
     "ogTitle": "Base Daily Tasks",
     "ogDescription": "Complete tasks and earn ETH rewards on Base",
     "ogImageUrl": "https://baseaapp.vercel.app/icon.svg",
-    "noindex": true
+    "noindex": false
   }
 }
