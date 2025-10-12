@@ -222,8 +222,9 @@ eme Toggle Button */
   .theme-toggle-text {
     display: none;
   }
-}/
-* Frame-Specific Optimizations */
+}
+
+/* Frame-Specific Optimizations */
 @media (max-width: 480px) {
   .container {
     padding: 10px;
