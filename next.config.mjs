@@ -1,20 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Headers removed for Farcaster compatibility
-  
-  // Farcaster Mini App optimizations
+  // Minimal config for Farcaster compatibility
   experimental: {
-    optimizePackageImports: ['@farcaster/core']
-  },
-  
-  // Allow iframe embedding
-  async rewrites() {
-    return [
-      {
-        source: '/.well-known/:path*',
-        destination: '/api/:path*'
-      }
-    ]
+    optimizePackageImports: []
   }
 };
 

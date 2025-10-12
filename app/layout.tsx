@@ -53,60 +53,59 @@ export default function RootLayout({
         <meta property="og:image" content="https://baseaapp.vercel.app/og-image.png" />
         <meta property="og:url" content="https://baseaapp.vercel.app" />
 
-        {/* Farcaster Mini App SDK - Minimal */}
+        {/* Farcaster SDK - Zero Dependencies */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              // Minimal Farcaster SDK
-              window.sdk = {
-                actions: {
-                  ready: function() {
-                    try {
-                      if (window.parent !== window) {
-                        window.parent.postMessage({ type: 'sdk_ready', ready: true }, '*');
-                        window.parent.postMessage('ready', '*');
-                      }
-                    } catch (e) {}
-                    return Promise.resolve();
-                  },
-                  share: function() { return Promise.resolve(); },
-                  close: function() { 
-                    try { 
-                      if (window.parent !== window) window.parent.postMessage({ type: 'close' }, '*'); 
-                    } catch (e) {} 
-                  },
-                  openUrl: function(url) { 
-                    try { 
-                      window.open(url, '_blank'); 
-                    } catch (e) {} 
+              try {
+                window.sdk = {
+                  actions: {
+                    ready: function() {
+                      try {
+                        if (window.parent && window.parent !== window) {
+                          window.parent.postMessage({ type: 'sdk_ready', ready: true }, '*');
+                          window.parent.postMessage('ready', '*');
+                        }
+                      } catch (e) {}
+                      return Promise.resolve();
+                    },
+                    share: function() { return Promise.resolve(); },
+                    close: function() { 
+                      try { 
+                        if (window.parent && window.parent !== window) {
+                          window.parent.postMessage({ type: 'close' }, '*'); 
+                        }
+                      } catch (e) {} 
+                    },
+                    openUrl: function(url) { 
+                      try { 
+                        window.open(url, '_blank'); 
+                      } catch (e) {} 
+                    }
                   }
+                };
+                
+                window._ready = true;
+                window._miniappReady = true;
+                
+                // Simple ready call
+                if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
+                  window.sdk.actions.ready();
+                  setTimeout(function() { window.sdk.actions.ready(); }, 100);
+                  setTimeout(function() { window.sdk.actions.ready(); }, 500);
                 }
-              };
-              
-              window._ready = true;
-              window._miniappReady = true;
-              
-              // Auto ready
-              function callReady() {
-                try {
-                  if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
-                    window.sdk.actions.ready();
-                  }
-                } catch (e) {}
-              }
-              
-              callReady();
-              setTimeout(callReady, 100);
-              setTimeout(callReady, 500);
-              
-              // Listen for ping
-              window.addEventListener('message', function(e) {
-                try {
-                  if (e.data === 'ping' || (e.data && e.data.type === 'request_ready')) {
-                    callReady();
-                  }
-                } catch (e) {}
-              });
+                
+                // Listen for messages
+                window.addEventListener('message', function(e) {
+                  try {
+                    if (e.data === 'ping' || (e.data && e.data.type === 'request_ready')) {
+                      if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
+                        window.sdk.actions.ready();
+                      }
+                    }
+                  } catch (e) {}
+                });
+              } catch (e) {}
             `,
           }}
         />
