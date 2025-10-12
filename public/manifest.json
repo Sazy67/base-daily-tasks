@@ -1,31 +1,44 @@
 {
   "name": "Base Daily Tasks",
-  "short_name": "BaseTasks", 
-  "description": "Complete daily tasks and spin the wheel to earn rewards on Base network",
-  "start_url": "https://baseaapp.vercel.app/",
+  "short_name": "Base Tasks",
+  "description": "Complete daily tasks and spin the wheel to earn ETH rewards on Base network",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#0052ff",
-  "theme_color": "#0052ff",
+  "background_color": "#667eea",
+  "theme_color": "#8b5cf6",
   "orientation": "portrait",
-  "scope": "https://baseaapp.vercel.app/",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["games", "finance", "productivity"],
   "icons": [
     {
       "src": "/baseikon.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "/icon-192x192.png",
+      "src": "/baseikon.png",
       "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
-  "categories": ["finance", "games", "social"],
-  "lang": "en",
-  "id": "base-daily-tasks"
+  "screenshots": [
+    {
+      "src": "/baseikon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "farcaster": {
+    "version": "1.0.0",
+    "sdk_version": "1.0.0",
+    "ready_signal": "sdk.ready",
+    "permissions": ["wallet", "identity"],
+    "features": ["tasks", "rewards", "spin_wheel"],
+    "network": "base",
+    "chain_id": "0x2105"
+  }
 }

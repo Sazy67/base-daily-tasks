@@ -1,0 +1,16 @@
+{
+  "name": "Base Daily Tasks",
+  "version": "1.0.0",
+  "description": "Complete daily tasks and spin the wheel to earn ETH rewards on Base network",
+  "icon": "https://baseaapp.vercel.app/baseikon.png",
+  "homeUrl": "https://baseaapp.vercel.app",
+  "imageUrl": "https://baseaapp.vercel.app/baseikon.png",
+  "buttonTitle": "Open App",
+  "splashImageUrl": "https://baseaapp.vercel.app/baseikon.png",
+  "splashBackgroundColor": "#667eea",
+  "theme": {
+    "colorScheme": "dark",
+    "primaryColor": "#8b5cf6",
+    "backgroundColor": "#667eea"
+  }
+}

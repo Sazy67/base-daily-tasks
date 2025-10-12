@@ -26,11 +26,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="manifest" href="/miniapp-manifest.json" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="farcaster-manifest" href="/farcaster-manifest.json" />
         <link rel="icon" href="/favicon.ico" />
-        <meta name="theme-color" content="#0052ff" />
+        <meta name="theme-color" content="#8b5cf6" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-        <meta name="miniapp-manifest" content="/miniapp-manifest.json" />
+        
+        {/* Farcaster Manifest Meta Tags */}
+        <meta name="farcaster:manifest" content="/farcaster-manifest.json" />
+        <meta name="farcaster:version" content="1.0.0" />
+        <meta name="farcaster:ready-signal" content="sdk.ready" />
+        
+        {/* Mini App Meta Tags */}
+        <meta name="miniapp-manifest" content="/manifest.json" />
         <meta name="base-miniapp" content="true" />
         <meta name="base-network" content="base" />
         <meta name="miniapp-ready" content="true" />

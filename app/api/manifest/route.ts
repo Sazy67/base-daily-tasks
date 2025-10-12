@@ -3,23 +3,18 @@ import { NextResponse } from 'next/server'
 export async function GET() {
   const manifest = {
     name: "Base Daily Tasks",
-    description: "Complete daily tasks and spin the wheel to earn rewards on Base network",
     version: "1.0.0",
-    icon: "https://baseaapp.vercel.app/icon.svg",
-    url: "https://baseaapp.vercel.app",
-    start_url: "https://baseaapp.vercel.app",
-    display: "standalone",
-    theme_color: "#0052ff",
-    background_color: "#0052ff",
-    categories: ["defi", "gaming", "social"],
-    permissions: [
-      "wallet_connect",
-      "transaction_send"
-    ],
-    networks: ["base"],
-    manifest_version: 1,
-    baseBuilder: {
-      allowedAddresses: ["0x0f797c30d549144973f7bb87bfd29d3a7070ce64"]
+    description: "Complete daily tasks and spin the wheel to earn ETH rewards on Base network",
+    icon: "https://baseaapp.vercel.app/baseikon.png",
+    homeUrl: "https://baseaapp.vercel.app",
+    imageUrl: "https://baseaapp.vercel.app/baseikon.png",
+    buttonTitle: "Open App",
+    splashImageUrl: "https://baseaapp.vercel.app/baseikon.png",
+    splashBackgroundColor: "#667eea",
+    theme: {
+      colorScheme: "dark",
+      primaryColor: "#8b5cf6",
+      backgroundColor: "#667eea"
     }
   }
 
@@ -27,7 +22,8 @@ export async function GET() {
     headers: {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
-      'Cache-Control': 'no-cache'
-    }
+      'Access-Control-Allow-Methods': 'GET',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
   })
 }
