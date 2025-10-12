@@ -16,7 +16,7 @@
 
 ## 🚀 Live Demo
 
-**Production URL**: [https://baseaapp-2dwe6g6i8-suat-ayazs-projects-64e3ae06.vercel.app](https://baseaapp-2dwe6g6i8-suat-ayazs-projects-64e3ae06.vercel.app)
+**Production URL**: [https://baseaapp.vercel.app](https://baseaapp.vercel.app)
 
 ## 🛠️ Tech Stack
 

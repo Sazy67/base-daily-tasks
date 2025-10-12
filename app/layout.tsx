@@ -38,20 +38,20 @@ export default function RootLayout({
         <meta name="base-sdk-ready" content="true" />
         {/* Farcaster Mini App Meta Tags */}
         <meta name="fc:frame" content="vNext" />
-        <meta name="fc:frame:image" content="https://baseaapp-wd6e9dlzo-suat-ayazs-projects-64e3ae06.vercel.app/frame-image.png" />
+        <meta name="fc:frame:image" content="https://baseaapp.vercel.app/frame-image.png" />
         <meta name="fc:frame:button:1" content="🎯 Open App" />
         <meta name="fc:frame:button:1:action" content="link" />
-        <meta name="fc:frame:button:1:target" content="https://baseaapp-wd6e9dlzo-suat-ayazs-projects-64e3ae06.vercel.app" />
+        <meta name="fc:frame:button:1:target" content="https://baseaapp.vercel.app" />
 
         {/* Farcaster Mini App Specific */}
         <meta name="farcaster:miniapp" content="true" />
         <meta name="farcaster:miniapp:name" content="Base Daily Tasks" />
         <meta name="farcaster:miniapp:description" content="Complete daily tasks and spin the wheel to earn rewards on Base network" />
-        <meta name="farcaster:miniapp:icon" content="https://baseaapp-wd6e9dlzo-suat-ayazs-projects-64e3ae06.vercel.app/icon.svg" />
+        <meta name="farcaster:miniapp:icon" content="https://baseaapp.vercel.app/icon.svg" />
         <meta property="og:title" content="Base Daily Tasks" />
         <meta property="og:description" content="Complete daily tasks and spin the wheel to earn rewards on Base network" />
-        <meta property="og:image" content="https://baseaapp-wd6e9dlzo-suat-ayazs-projects-64e3ae06.vercel.app/icon.svg" />
-        <meta property="og:url" content="https://baseaapp-wd6e9dlzo-suat-ayazs-projects-64e3ae06.vercel.app" />
+        <meta property="og:image" content="https://baseaapp.vercel.app/icon.svg" />
+        <meta property="og:url" content="https://baseaapp.vercel.app" />
 
         {/* Farcaster Mini App SDK - Simplified & Working */}
         <script
