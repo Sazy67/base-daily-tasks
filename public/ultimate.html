@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base Daily Tasks</title>
+    
+    <!-- Farcaster Frame Meta Tags -->
+    <meta name="fc:frame" content="vNext" />
+    <meta name="fc:frame:image" content="https://baseaapp.vercel.app/baseikon.png" />
+    <meta name="fc:frame:button:1" content="Open App" />
+    <meta name="fc:frame:button:1:action" content="link" />
+    <meta name="fc:frame:button:1:target" content="https://baseaapp.vercel.app" />
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Base Daily Tasks" />
+    <meta property="og:description" content="Complete daily tasks and earn rewards on Base network" />
+    <meta property="og:image" content="https://baseaapp.vercel.app/baseikon.png" />
+    <meta property="og:url" content="https://baseaapp.vercel.app" />
+    
+    <!-- Farcaster Mini App -->
+    <meta name="farcaster:miniapp" content="true" />
+    <meta name="farcaster:miniapp:name" content="Base Daily Tasks" />
+    <meta name="farcaster:miniapp:description" content="Complete daily tasks and earn rewards on Base network" />
+    <meta name="farcaster:miniapp:icon" content="https://baseaapp.vercel.app/baseikon.png" />
+</head>
+<body style="margin:0;padding:20px;font-family:Arial,sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;">
+    <div style="max-width:400px;width:100%;">
+        <div style="font-size:4rem;margin-bottom:20px;">🎯</div>
+        <h1 style="font-size:2rem;margin-bottom:15px;">Base Daily Tasks</h1>
+        <p style="font-size:1.1rem;margin-bottom:25px;opacity:0.9;">Ultimate Farcaster Test</p>
+        
+        <div style="background:rgba(255,255,255,0.1);padding:20px;border-radius:12px;margin-bottom:25px;">
+            <div id="status">🔄 Initializing SDK...</div>
+        </div>
+        
+        <button onclick="manualReady()" style="background:#22c55e;color:white;border:none;padding:15px 30px;border-radius:8px;font-size:1.1rem;cursor:pointer;width:100%;margin-bottom:15px;">
+            🚀 Manual Ready Test
+        </button>
+        
+        <div id="log" style="background:rgba(0,0,0,0.2);padding:15px;border-radius:8px;font-size:0.8rem;text-align:left;max-height:200px;overflow-y:auto;"></div>
+    </div>
+
+    <script>
+        // Logging function
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${time}] ${message}<br>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+        
+        // Initialize immediately
+        log('🚀 Starting SDK initialization...');
+        
+        // Create SDK - Multiple approaches
+        try {
+            // Approach 1: Standard SDK
+            window.sdk = {
+                actions: {
+                    ready() {
+                        log('📡 SDK ready() called');
+                        try {
+                            if (window.parent && window.parent !== window) {
+                                // Try multiple message formats
+                                window.parent.postMessage({ type: 'sdk_ready' }, '*');
+                                window.parent.postMessage({ type: 'miniapp_ready', ready: true }, '*');
+                                window.parent.postMessage('ready', '*');
+                                log('✅ Ready messages sent to parent');
+                            } else {
+                                log('ℹ️ No parent window detected');
+                            }
+                        } catch (e) {
+                            log('❌ Ready error: ' + e.message);
+                        }
+                        return Promise.resolve();
+                    },
+                    share: () => Promise.resolve(),
+                    close: () => {
+                        try {
+                            if (window.parent !== window) {
+                                window.parent.postMessage({ type: 'close' }, '*');
+                            }
+                        } catch (e) {}
+                    },
+                    openUrl: (url) => {
+                        try {
+                            window.open(url, '_blank');
+                        } catch (e) {}
+                    }
+                }
+            };
+            
+            log('✅ SDK object created');
+            
+            // Set ready flags
+            window._ready = true;
+            window._miniappReady = true;
+            
+            // Update status
+            document.getElementById('status').innerHTML = '✅ SDK Ready';
+            
+        } catch (e) {
+            log('❌ SDK creation error: ' + e.message);
+            document.getElementById('status').innerHTML = '❌ SDK Error';
+        }
+        
+        // Auto-call ready with different timings
+        function callReady() {
+            try {
+                if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
+                    window.sdk.actions.ready();
+                    return true;
+                } else {
+                    log('❌ SDK not available for ready call');
+                    return false;
+                }
+            } catch (e) {
+                log('❌ CallReady error: ' + e.message);
+                return false;
+            }
+        }
+        
+        // Immediate call
+        if (callReady()) {
+            log('✅ Immediate ready() successful');
+        }
+        
+        // Delayed calls
+        setTimeout(() => {
+            if (callReady()) log('✅ 100ms ready() successful');
+        }, 100);
+        
+        setTimeout(() => {
+            if (callReady()) log('✅ 500ms ready() successful');
+        }, 500);
+        
+        setTimeout(() => {
+            if (callReady()) log('✅ 1000ms ready() successful');
+        }, 1000);
+        
+        // Listen for messages
+        window.addEventListener('message', function(event) {
+            log('📨 Message received: ' + JSON.stringify(event.data));
+            try {
+                if (event.data === 'ping' || 
+                    (event.data && (event.data.type === 'ping' || event.data.type === 'request_ready'))) {
+                    log('🏓 Ping received, responding with ready');
+                    callReady();
+                }
+            } catch (e) {
+                log('❌ Message handler error: ' + e.message);
+            }
+        });
+        
+        // Ready on load events
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                log('📄 DOMContentLoaded - calling ready');
+                callReady();
+            });
+        } else {
+            log('📄 Document already loaded');
+        }
+        
+        window.addEventListener('load', function() {
+            log('🪟 Window loaded - calling ready');
+            callReady();
+        });
+        
+        // Manual test function
+        function manualReady() {
+            log('🔧 Manual ready test triggered');
+            if (callReady()) {
+                log('✅ Manual ready test successful');
+                document.getElementById('status').innerHTML = '✅ Manual Ready Sent!';
+            } else {
+                log('❌ Manual ready test failed');
+                document.getElementById('status').innerHTML = '❌ Manual Ready Failed!';
+            }
+        }
+        
+        // Periodic ready calls for first 10 seconds
+        let readyCount = 0;
+        const readyInterval = setInterval(() => {
+            if (readyCount < 5) {
+                log(`⏰ Periodic ready call #${readyCount + 1}`);
+                callReady();
+                readyCount++;
+            } else {
+                clearInterval(readyInterval);
+                log('⏰ Periodic ready calls completed');
+            }
+        }, 2000);
+        
+        log('🎯 SDK initialization complete');
+    </script>
+</body>
+</html>
