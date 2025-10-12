@@ -105,19 +105,16 @@ export default function SimplePage() {
               fontSize: '1rem',
               cursor: 'pointer',
               fontWeight: '600',
-              transition: 'transform 0.2s',
               boxShadow: '0 4px 12px rgba(34, 197, 94, 0.3)'
             }}
-            onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
-            onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
           >
             🚀 Launch App
           </button>
           
           <button 
             onClick={() => {
-              if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
-                window.sdk.actions.ready();
+              if ((window as any).sdk && (window as any).sdk.actions && (window as any).sdk.actions.ready) {
+                (window as any).sdk.actions.ready();
                 alert('✅ Ready signal sent to Farcaster!');
               } else {
                 alert('❌ SDK not found');
@@ -132,11 +129,8 @@ export default function SimplePage() {
               fontSize: '1rem',
               cursor: 'pointer',
               fontWeight: '600',
-              transition: 'transform 0.2s',
               boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)'
             }}
-            onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
-            onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
           >
             🔧 Test SDK
           </button>
