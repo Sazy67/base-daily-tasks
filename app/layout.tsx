@@ -53,71 +53,60 @@ export default function RootLayout({
         <meta property="og:image" content="https://baseaapp.vercel.app/og-image.png" />
         <meta property="og:url" content="https://baseaapp.vercel.app" />
 
-        {/* Farcaster Mini App SDK - Ultra Simple */}
+        {/* Farcaster Mini App SDK - Minimal */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              // Ultra Simple Farcaster SDK
-              (function() {
-                // Create minimal SDK
-                window.sdk = {
-                  actions: {
-                    ready: function() {
-                      try {
-                        if (window.parent !== window) {
-                          window.parent.postMessage({ type: 'sdk_ready', ready: true }, '*');
-                          window.parent.postMessage('ready', '*');
-                        }
-                        return Promise.resolve();
-                      } catch (e) {
-                        return Promise.resolve();
+              // Minimal Farcaster SDK
+              window.sdk = {
+                actions: {
+                  ready: function() {
+                    try {
+                      if (window.parent !== window) {
+                        window.parent.postMessage({ type: 'sdk_ready', ready: true }, '*');
+                        window.parent.postMessage('ready', '*');
                       }
-                    },
-                    share: function() { return Promise.resolve(); },
-                    close: function() { 
-                      try { 
-                        if (window.parent !== window) window.parent.postMessage({ type: 'close' }, '*'); 
-                      } catch (e) {} 
-                    },
-                    openUrl: function(url) { 
-                      try { 
-                        window.open(url, '_blank'); 
-                      } catch (e) {} 
-                    }
+                    } catch (e) {}
+                    return Promise.resolve();
+                  },
+                  share: function() { return Promise.resolve(); },
+                  close: function() { 
+                    try { 
+                      if (window.parent !== window) window.parent.postMessage({ type: 'close' }, '*'); 
+                    } catch (e) {} 
+                  },
+                  openUrl: function(url) { 
+                    try { 
+                      window.open(url, '_blank'); 
+                    } catch (e) {} 
                   }
-                };
-                
-                // Set flags
-                window._ready = true;
-                window._miniappReady = true;
-                
-                // Simple ready function
-                function ready() {
+                }
+              };
+              
+              window._ready = true;
+              window._miniappReady = true;
+              
+              // Auto ready
+              function callReady() {
+                try {
                   if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
                     window.sdk.actions.ready();
                   }
-                }
-                
-                // Call ready immediately and with delays
-                ready();
-                setTimeout(ready, 100);
-                setTimeout(ready, 500);
-                setTimeout(ready, 1000);
-                
-                // Listen for ping
-                window.addEventListener('message', function(e) {
+                } catch (e) {}
+              }
+              
+              callReady();
+              setTimeout(callReady, 100);
+              setTimeout(callReady, 500);
+              
+              // Listen for ping
+              window.addEventListener('message', function(e) {
+                try {
                   if (e.data === 'ping' || (e.data && e.data.type === 'request_ready')) {
-                    ready();
+                    callReady();
                   }
-                });
-                
-                // Ready on load
-                if (document.readyState !== 'loading') {
-                  ready();
-                } else {
-                  document.addEventListener('DOMContentLoaded', ready);
-                }
-              })();
+                } catch (e) {}
+              });
             `,
           }}
         />
