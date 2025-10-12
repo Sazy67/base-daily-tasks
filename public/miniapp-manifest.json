@@ -4,7 +4,7 @@
   "description": "Complete daily tasks and spin the wheel to earn rewards on Base network",
   "version": "1.0.0",
   "manifest_version": 2,
-  "icon": "https://baseaapp.vercel.app/icon.svg",
+  "icon": "https://baseaapp.vercel.app/baseikon.png",
   "start_url": "https://baseaapp.vercel.app",
   "display": "standalone",
   "orientation": "portrait",
@@ -29,9 +29,14 @@
   },
   "icons": [
     {
-      "src": "https://baseaapp.vercel.app/icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml"
+      "src": "https://baseaapp.vercel.app/baseikon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "https://baseaapp.vercel.app/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
     }
   ]
 }

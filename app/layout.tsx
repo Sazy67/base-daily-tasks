@@ -47,7 +47,7 @@ export default function RootLayout({
         <meta name="farcaster:miniapp" content="true" />
         <meta name="farcaster:miniapp:name" content="Base Daily Tasks" />
         <meta name="farcaster:miniapp:description" content="Complete daily tasks and spin the wheel to earn rewards on Base network" />
-        <meta name="farcaster:miniapp:icon" content="https://baseaapp.vercel.app/icon.svg" />
+        <meta name="farcaster:miniapp:icon" content="https://baseaapp.vercel.app/baseikon.png" />
         <meta property="og:title" content="Base Daily Tasks" />
         <meta property="og:description" content="Complete daily tasks and spin the wheel to earn rewards on Base network" />
         <meta property="og:image" content="https://baseaapp.vercel.app/og-image.png" />
