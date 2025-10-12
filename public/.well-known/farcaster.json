@@ -10,25 +10,25 @@
   "miniapp": {
     "version": "1",
     "name": "Base Daily Tasks",
-    "homeUrl": "https://baseaapp-q52c8mohm-suat-ayazs-projects-64e3ae06.vercel.app",
-    "iconUrl": "https://baseaapp-q52c8mohm-suat-ayazs-projects-64e3ae06.vercel.app/icon.svg",
-    "splashImageUrl": "https://baseaapp-q52c8mohm-suat-ayazs-projects-64e3ae06.vercel.app/icon.svg",
+    "homeUrl": "https://baseaapp-wd6e9dlzo-suat-ayazs-projects-64e3ae06.vercel.app",
+    "iconUrl": "https://baseaapp-wd6e9dlzo-suat-ayazs-projects-64e3ae06.vercel.app/icon.svg",
+    "splashImageUrl": "https://baseaapp-wd6e9dlzo-suat-ayazs-projects-64e3ae06.vercel.app/icon.svg",
     "splashBackgroundColor": "#0052ff",
-    "webhookUrl": "https://baseaapp-q52c8mohm-suat-ayazs-projects-64e3ae06.vercel.app/api/webhook",
+    "webhookUrl": "https://baseaapp-wd6e9dlzo-suat-ayazs-projects-64e3ae06.vercel.app/api/webhook",
     "subtitle": "Earn rewards daily",
     "description": "Complete daily tasks and spin the wheel to earn ETH rewards on Base network. Join the community and start earning today!",
     "screenshotUrls": [
-      "https://baseaapp-q52c8mohm-suat-ayazs-projects-64e3ae06.vercel.app/icon.svg",
-      "https://baseaapp-q52c8mohm-suat-ayazs-projects-64e3ae06.vercel.app/icon.svg",
-      "https://baseaapp-q52c8mohm-suat-ayazs-projects-64e3ae06.vercel.app/icon.svg"
+      "https://baseaapp-wd6e9dlzo-suat-ayazs-projects-64e3ae06.vercel.app/icon.svg",
+      "https://baseaapp-wd6e9dlzo-suat-ayazs-projects-64e3ae06.vercel.app/icon.svg",
+      "https://baseaapp-wd6e9dlzo-suat-ayazs-projects-64e3ae06.vercel.app/icon.svg"
     ],
     "primaryCategory": "finance",
     "tags": ["finance", "defi", "rewards", "tasks", "base"],
-    "heroImageUrl": "https://baseaapp-q52c8mohm-suat-ayazs-projects-64e3ae06.vercel.app/icon.svg",
+    "heroImageUrl": "https://baseaapp-wd6e9dlzo-suat-ayazs-projects-64e3ae06.vercel.app/icon.svg",
     "tagline": "Earn ETH daily",
     "ogTitle": "Base Daily Tasks",
     "ogDescription": "Complete tasks and earn ETH rewards on Base",
-    "ogImageUrl": "https://baseaapp-q52c8mohm-suat-ayazs-projects-64e3ae06.vercel.app/icon.svg",
+    "ogImageUrl": "https://baseaapp-wd6e9dlzo-suat-ayazs-projects-64e3ae06.vercel.app/icon.svg",
     "noindex": true
   }
 }
