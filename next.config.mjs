@@ -8,6 +8,10 @@ const nextConfig = {
   async rewrites() {
     return [
       {
+        source: '/working',
+        destination: '/working.html'
+      },
+      {
         source: '/ultimate',
         destination: '/ultimate.html'
       },
